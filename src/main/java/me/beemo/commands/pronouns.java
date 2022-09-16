@@ -20,7 +20,7 @@ public class pronouns extends ListenerAdapter {
                         Button.secondary(userId + ":hehim", "He/Him"),
                         Button.secondary(userId + ":sheher", "She/Her"),
                         Button.secondary(userId + ":theythem", "They/Them"),
-                        Button.secondary(userId + ":none", "None")) // the first parameter is the component id we use in onButtonInteraction above
+                        Button.danger(userId + ":none", "Remove")) // the first parameter is the component id we use in onButtonInteraction above
                 .queue();
     }
 
@@ -61,17 +61,16 @@ public class pronouns extends ListenerAdapter {
         }
 
         if(memberRoles.contains(sheher) && sheher != roleToAdd){
-            guild.removeRoleFromMember(userSnowflake, sheher);
+            guild.removeRoleFromMember(userSnowflake, sheher).queue();
         }
         if(memberRoles.contains(hehim) && hehim != roleToAdd){
-            guild.removeRoleFromMember(userSnowflake, hehim);
+            guild.removeRoleFromMember(userSnowflake, hehim).queue();
         }
         if(memberRoles.contains(theythem) && theythem != roleToAdd){
-            guild.removeRoleFromMember(userSnowflake, theythem);
+            guild.removeRoleFromMember(userSnowflake, theythem).queue();
         }
         if(!memberRoles.contains(roleToAdd) && roleToAdd != null){
-            guild.addRoleToMember(userSnowflake, roleToAdd);
-            System.out.println(event.getMember().getNickname() + " -> pronoun -> " + type);
+            guild.addRoleToMember(userSnowflake, roleToAdd).queue();
         }
     }
 }
