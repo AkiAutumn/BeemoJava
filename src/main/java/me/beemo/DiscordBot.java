@@ -91,7 +91,11 @@ public class DiscordBot extends ListenerAdapter {
                 pronouns(event);
                 break;
             case "wake":
-                wake(event, event.getOption("user").getAsUser());
+                try {
+                    wake(event, event.getOption("user").getAsUser());
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             default:
                 event.reply("I can't handle that command right now :(").setEphemeral(true).queue();
