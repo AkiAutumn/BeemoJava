@@ -27,6 +27,7 @@ import java.util.Objects;
 import static me.beemo.commands.massmove.move;
 import static me.beemo.commands.say.say;
 import static me.beemo.commands.pronouns.pronouns;
+import static me.beemo.commands.wake.wake;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
 public class DiscordBot extends ListenerAdapter {
@@ -57,8 +58,15 @@ public class DiscordBot extends ListenerAdapter {
         commands.addCommands(
                 Commands.slash("move", "Moves all members of a channel")
                         .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
+                        .setGuildOnly(true)
         );
-
+        commands.addCommands(
+                Commands.slash("wake", "Wakes deafened people")
+                        .addOption(USER, "user", "Who to wake up", true)
+                        .addOption(INTEGER, "amount", "How often to move")
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS))
+        );
         // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
         commands.queue();
 
@@ -81,6 +89,9 @@ public class DiscordBot extends ListenerAdapter {
                 break;
             case "pronouns":
                 pronouns(event);
+                break;
+            case "wake":
+                wake(event, event.getOption("user").getAsUser());
                 break;
             default:
                 event.reply("I can't handle that command right now :(").setEphemeral(true).queue();
