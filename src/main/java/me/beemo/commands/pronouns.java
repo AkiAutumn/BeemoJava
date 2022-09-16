@@ -15,13 +15,15 @@ public class pronouns extends ListenerAdapter {
     public static void pronouns(SlashCommandInteractionEvent event)
     {
         String userId = event.getUser().getId();
-        event.reply("Select your pronouns!") // prompt the user with a button menu
+
+        event.getChannel().sendMessage("✨ Select your pronouns ✨") // prompt the user with a button menu
                 .addActionRow(// this means "<style>(<id>, <label>)", you can encode anything you want in the id (up to 100 characters)
                         Button.secondary(userId + ":hehim", "He/Him"),
                         Button.secondary(userId + ":sheher", "She/Her"),
                         Button.secondary(userId + ":theythem", "They/Them"),
                         Button.danger(userId + ":none", "Remove")) // the first parameter is the component id we use in onButtonInteraction above
                 .queue();
+        event.reply("Did it :3").setEphemeral(true).queue();
     }
 
     @Override
