@@ -6,21 +6,28 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import java.util.EnumSet;
+import java.util.Objects;
 
+import static me.beemo.commands.massmove.move;
 import static me.beemo.commands.say.say;
 import static me.beemo.commands.pronouns.pronouns;
-import static net.dv8tion.jda.api.interactions.commands.OptionType.INTEGER;
-import static net.dv8tion.jda.api.interactions.commands.OptionType.STRING;
+import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
 public class DiscordBot extends ListenerAdapter {
 
@@ -38,7 +45,6 @@ public class DiscordBot extends ListenerAdapter {
         // These commands might take a few minutes to be active after creation/update/delete
         CommandListUpdateAction commands = bot.updateCommands();
 
-        // Simple reply commands
         commands.addCommands(
                 Commands.slash("say", "Makes the bot say what you tell it to")
                         .addOption(STRING, "content", "What the bot should say", true) // you can add required options like this too
@@ -48,11 +54,15 @@ public class DiscordBot extends ListenerAdapter {
                         .setGuildOnly(true)
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
         );
+        commands.addCommands(
+                Commands.slash("move", "Moves all members of a channel")
+                        .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
+        );
 
         // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
         commands.queue();
 
-        System.out.println("Bot started successfully");
+        System.out.println("Beemo on the line");
     }
 
 
@@ -65,6 +75,9 @@ public class DiscordBot extends ListenerAdapter {
         {
             case "say":
                 say(event, event.getOption("content").getAsString()); // content is required so no null-check here
+                break;
+            case "move":
+                move(event, event.getOption("destination").getAsChannel());
                 break;
             case "pronouns":
                 pronouns(event);
