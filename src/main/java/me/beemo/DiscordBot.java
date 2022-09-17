@@ -1,29 +1,28 @@
 package me.beemo;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import me.beemo.commands.colorMenu;
 import me.beemo.commands.pronouns;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Objects;
+import java.util.List;
 
+import static me.beemo.commands.colorMenu.colors;
 import static me.beemo.commands.massmove.move;
 import static me.beemo.commands.say.say;
 import static me.beemo.commands.pronouns.pronouns;
@@ -41,6 +40,7 @@ public class DiscordBot extends ListenerAdapter {
                 .setActivity(Activity.watching("Cyberpunk Edgerunners"))
                 .addEventListeners(new DiscordBot())
                 .addEventListeners(new pronouns())
+                .addEventListeners(new colorMenu())
                 .build();
 
         // These commands might take a few minutes to be active after creation/update/delete
@@ -52,6 +52,11 @@ public class DiscordBot extends ListenerAdapter {
         );
         commands.addCommands(
                 Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+        );
+        commands.addCommands(
+                Commands.slash("colors", "Sends an embed for color role assigning")
                         .setGuildOnly(true)
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
         );
@@ -89,6 +94,9 @@ public class DiscordBot extends ListenerAdapter {
                 break;
             case "pronouns":
                 pronouns(event);
+                break;
+            case "colors":
+                colors(event);
                 break;
             case "wake":
                 try {
