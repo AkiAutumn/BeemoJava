@@ -58,7 +58,8 @@ public class games extends ListenerAdapter {
                 break;
         }
 
-        if(!memberRoles.contains(roleToAdd) && roleToAdd != null){
+        if(roleToAdd != null)
+        if(!memberRoles.contains(roleToAdd)){
             guild.addRoleToMember(userSnowflake, roleToAdd).queue();
         } else {
             guild.removeRoleFromMember(userSnowflake, roleToAdd).queue();

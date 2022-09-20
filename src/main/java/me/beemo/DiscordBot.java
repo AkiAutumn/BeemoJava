@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -94,6 +95,7 @@ public class DiscordBot extends ListenerAdapter {
         switch (event.getName())
         {
             case "shutdown":
+                event.reply("Killing myself now ... :c").setEphemeral(true).queue();
                 System.exit(0);
                 break;
             case "say":
@@ -121,5 +123,11 @@ public class DiscordBot extends ListenerAdapter {
             default:
                 event.reply("I can't handle that command right now :(").setEphemeral(true).queue();
         }
+    }
+
+    @Override
+    public void onButtonInteraction(ButtonInteractionEvent event)
+    {
+        event.deferEdit().queue();
     }
 }
