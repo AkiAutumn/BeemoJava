@@ -48,6 +48,7 @@ public class DiscordBot extends ListenerAdapter {
 
         commands.addCommands(
                 Commands.slash("shutdown", "Terminates the active bot instance")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
         );
         commands.addCommands(
                 Commands.slash("say", "Makes the bot say what you tell it to")
