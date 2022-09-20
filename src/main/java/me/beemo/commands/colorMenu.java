@@ -13,7 +13,8 @@ import java.util.List;
 
 public class colorMenu extends ListenerAdapter {
 
-    public static void colors(SlashCommandInteractionEvent event) {
+    public static void colorRoleCommand(SlashCommandInteractionEvent event) {
+        event.deferReply(true).queue();
         String userId = event.getUser().getId();
 
         SelectMenu menu = SelectMenu.create("color-menu")
@@ -29,13 +30,12 @@ public class colorMenu extends ListenerAdapter {
                 .addOption("\uD83D\uDC97 Pink \uD83D\uDC97", "pink")
                 .addOption("\uD83E\uDD0D White \uD83E\uDD0D", "white")
                 .addOption("\uD83D\uDDA4 Black \uD83D\uDDA4", "black")
-                .addOption("None", "none")
+                .addOption("- Remove -", "none")
                 .build();
 
-        event.getChannel().sendMessage(":rainbow: Select your color :rainbow:")
+        event.getChannel().sendMessage(":rainbow: Pick a color for your name! :rainbow:")
                 .addActionRow(menu)
                 .queue();
-        event.reply("Did it :3").setEphemeral(true).queue();
     }
 
     @Override

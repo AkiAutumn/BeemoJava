@@ -2,6 +2,7 @@ package me.beemo;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import me.beemo.commands.colorMenu;
+import me.beemo.commands.games;
 import me.beemo.commands.pronouns;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -9,7 +10,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -17,15 +17,13 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 
-import static me.beemo.commands.colorMenu.colors;
+import static me.beemo.commands.colorMenu.colorRoleCommand;
+import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.massmove.move;
+import static me.beemo.commands.pronouns.pronounsRoleCommand;
 import static me.beemo.commands.say.say;
-import static me.beemo.commands.pronouns.pronouns;
 import static me.beemo.commands.wake.wake;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
@@ -41,6 +39,7 @@ public class DiscordBot extends ListenerAdapter {
                 .addEventListeners(new DiscordBot())
                 .addEventListeners(new pronouns())
                 .addEventListeners(new colorMenu())
+                .addEventListeners(new games())
                 .build();
 
         // These commands might take a few minutes to be active after creation/update/delete
@@ -57,6 +56,11 @@ public class DiscordBot extends ListenerAdapter {
         );
         commands.addCommands(
                 Commands.slash("colors", "Sends an embed for color role assigning")
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+        );
+        commands.addCommands(
+                Commands.slash("games", "Sends an embed for game role assigning")
                         .setGuildOnly(true)
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
         );
@@ -93,10 +97,13 @@ public class DiscordBot extends ListenerAdapter {
                 move(event, event.getOption("destination").getAsChannel());
                 break;
             case "pronouns":
-                pronouns(event);
+                pronounsRoleCommand(event);
                 break;
             case "colors":
-                colors(event);
+                colorRoleCommand(event);
+                break;
+            case "games":
+                gameRoleCommand(event);
                 break;
             case "wake":
                 try {

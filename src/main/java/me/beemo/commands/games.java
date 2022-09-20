@@ -6,24 +6,23 @@ import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.List;
 
-public class pronouns extends ListenerAdapter {
-    public static void pronounsRoleCommand(SlashCommandInteractionEvent event)
+public class games extends ListenerAdapter {
+    public static void gameRoleCommand(SlashCommandInteractionEvent event)
     {
         event.deferReply(true).queue();
         String userId = event.getUser().getId();
 
-        event.getChannel().sendMessage("✨ Select your pronouns ✨") // prompt the user with a button menu
+        event.getChannel().sendMessage(":video_game: Select the games you play, if you want to get notified about game sessions and upcoming projects! :video_game:" +
+                        "                 \n *(Select the respective item again to remove the role)*") // prompt the user with a button menu
                 .addActionRow(// this means "<style>(<id>, <label>)", you can encode anything you want in the id (up to 100 characters)
-                        Button.secondary(userId + ":hehim", "He/Him"),
-                        Button.secondary(userId + ":sheher", "She/Her"),
-                        Button.secondary(userId + ":theythem", "They/Them"),
-                        Button.danger(userId + ":none", "Remove")) // the first parameter is the component id we use in onButtonInteraction above
+                        Button.secondary(userId + ":valorant", "VALORANT"),
+                        Button.secondary(userId + ":minecraft", "Minecraft"),
+                        Button.secondary(userId + ":amongus", "Among Us"))
                 .queue();
     }
 
@@ -41,38 +40,28 @@ public class pronouns extends ListenerAdapter {
         UserSnowflake userSnowflake = UserSnowflake.fromId(event.getUser().getId());
         Guild guild = event.getGuild();
         List<Role> memberRoles = event.getMember().getRoles();
-        Role sheher = event.getGuild().getRoleById("1020412182728556554");
-        Role hehim = event.getGuild().getRoleById("1020412126013182014");
-        Role theythem = event.getGuild().getRoleById("1020412220510851243");
+        Role valorantRole = event.getGuild().getRoleById("964945626754351114");
+        Role minecraftRole = event.getGuild().getRoleById("788036628210778123");
+        Role amongusRole = event.getGuild().getRoleById("951517928153559040");
         Role roleToAdd = null;
 
         switch (type)
         {
-            case "hehim":
-                roleToAdd = hehim;
+            case "valorant":
+                roleToAdd = valorantRole;
                 break;
-            case "sheher":
-                roleToAdd = sheher;
+            case "minecraft":
+                roleToAdd = minecraftRole;
                 break;
-            case "theythem":
-                roleToAdd = theythem;
-                break;
-            case "none":
-                roleToAdd = null;
+            case "amongus":
+                roleToAdd = amongusRole;
                 break;
         }
 
-        if(memberRoles.contains(sheher) && sheher != roleToAdd){
-            guild.removeRoleFromMember(userSnowflake, sheher).queue();
-        }
-        if(memberRoles.contains(hehim) && hehim != roleToAdd){
-            guild.removeRoleFromMember(userSnowflake, hehim).queue();
-        }
-        if(memberRoles.contains(theythem) && theythem != roleToAdd){
-            guild.removeRoleFromMember(userSnowflake, theythem).queue();
-        }
         if(!memberRoles.contains(roleToAdd) && roleToAdd != null){
             guild.addRoleToMember(userSnowflake, roleToAdd).queue();
+        } else {
+            guild.removeRoleFromMember(userSnowflake, roleToAdd).queue();
         }
     }
 }
