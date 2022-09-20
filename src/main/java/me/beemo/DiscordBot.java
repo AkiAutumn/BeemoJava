@@ -46,6 +46,9 @@ public class DiscordBot extends ListenerAdapter {
         CommandListUpdateAction commands = bot.updateCommands();
 
         commands.addCommands(
+                Commands.slash("shutdown", "Terminates the active bot instance")
+        );
+        commands.addCommands(
                 Commands.slash("say", "Makes the bot say what you tell it to")
                         .addOption(STRING, "content", "What the bot should say", true) // you can add required options like this too
         );
@@ -90,6 +93,9 @@ public class DiscordBot extends ListenerAdapter {
             return;
         switch (event.getName())
         {
+            case "shutdown":
+                System.exit(0);
+                break;
             case "say":
                 say(event, event.getOption("content").getAsString()); // content is required so no null-check here
                 break;
