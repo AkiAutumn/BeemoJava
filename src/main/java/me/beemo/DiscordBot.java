@@ -104,6 +104,9 @@ public class DiscordBot extends ListenerAdapter {
             case "say":
                 say(event, event.getOption("content").getAsString()); // content is required so no null-check here
                 break;
+            case "makesurvey":
+                onMessageReceived();
+                break;
             case "move":
                 move(event, event.getOption("destination").getAsChannel());
                 break;
@@ -128,9 +131,13 @@ public class DiscordBot extends ListenerAdapter {
         }
     }
 
+    public void onMessageReceived() {
+    }
+
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event)
     {
         event.deferEdit().queue();
     }
+
 }
