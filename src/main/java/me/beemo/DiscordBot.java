@@ -3,6 +3,7 @@ package me.beemo;
 import io.github.cdimascio.dotenv.Dotenv;
 import me.beemo.commands.colorMenu;
 import me.beemo.commands.games;
+import me.beemo.commands.makesurvey;
 import me.beemo.commands.pronouns;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -41,6 +42,7 @@ public class DiscordBot extends ListenerAdapter {
                 .addEventListeners(new pronouns())
                 .addEventListeners(new colorMenu())
                 .addEventListeners(new games())
+                .addEventListeners(new makesurvey())
                 .build();
 
         // These commands might take a few minutes to be active after creation/update/delete
