@@ -7,7 +7,9 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 
 public class makesurvey extends ListenerAdapter {
-    public void onMessageReceived(MessageReactionAddEvent event) {
+
+    @Override
+    public void onMessageReactionAdd(MessageReactionAddEvent event) {
         boolean check;
         if (event.getReaction().equals("📝")) {
             //when message has 📝 then continue
