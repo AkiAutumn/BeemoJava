@@ -107,7 +107,7 @@ public class DiscordBot extends ListenerAdapter {
             case "makesurvey":
                 onMessageReceived();
                 break;
-            case "move":
+            case "massmove":
                 move(event, event.getOption("destination").getAsChannel());
                 break;
             case "pronouns":
