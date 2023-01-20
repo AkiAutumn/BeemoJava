@@ -86,7 +86,7 @@ public class DiscordBot extends ListenerAdapter {
         // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
         commands.queue();
 
-        System.out.println("Beemo on the line!");
+        System.out.println("Beemo on the line.");
     }
 
 
