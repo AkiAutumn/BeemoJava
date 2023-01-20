@@ -127,7 +127,7 @@ public class DiscordBot extends ListenerAdapter {
                 }
                 break;
             default:
-                event.reply("I can't handle that command right now :(").setEphemeral(true).queue();
+                event.reply("I don't recognise this command :(").setEphemeral(true).queue();
         }
     }
 
