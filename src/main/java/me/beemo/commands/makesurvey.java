@@ -11,6 +11,7 @@ public class makesurvey extends ListenerAdapter {
     @Override
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
         boolean check;
+
         if (event.getReaction().equals("📝")) {
             //when message has 📝 then continue
             check = true;
@@ -37,6 +38,7 @@ public class makesurvey extends ListenerAdapter {
 
         if (check == true) {
             Message message = event.getChannel().getHistory().getMessageById(event.getMessageId());
+            message.removeReaction(Emoji.fromUnicode("U+274C")).queue();
             message.addReaction(Emoji.fromUnicode("U+274C")).queue();
             message.addReaction(Emoji.fromUnicode("U+2705")).queue();
             message.removeReaction(Emoji.fromUnicode("U+1F4DD")).queue();
