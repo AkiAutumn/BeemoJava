@@ -1,0 +1,52 @@
+Index: src/main/java/me/beemo/commands/makesurvey.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package me.beemo.commands;\r\n\r\nimport net.dv8tion.jda.api.entities.Message;\r\nimport net.dv8tion.jda.api.entities.emoji.Emoji;\r\nimport net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;\r\nimport net.dv8tion.jda.api.hooks.ListenerAdapter;\r\n\r\n\r\npublic class makesurvey extends ListenerAdapter {\r\n\r\n    @Override\r\n    public void onMessageReactionAdd(MessageReactionAddEvent event) {\r\n        boolean check;\r\n        if (event.getReaction().equals(\"\uD83D\uDCDD\")) {\r\n            //when message has \uD83D\uDCDD then continue\r\n            check = true;\r\n        } else {\r\n            //when message has not \uD83D\uDCDD then abort\r\n            check = false;\r\n        }\r\n\r\n        if (event.getReaction().equals(\"✅\")){\r\n            //when message has ✅ then abort\r\n            check = false;\r\n        } else {\r\n            //when message has not ✅ then continue\r\n            check = true;\r\n        }\r\n\r\n        if (event.getReaction().equals(\"❌\")){\r\n            //when message has ❌ then abort\r\n            check = false;\r\n        } else {\r\n            //when message has not ❌ then continue\r\n            check = true;\r\n        }\r\n\r\n        if (check == true) {\r\n            Message message = event.getChannel().getHistory().getMessageById(event.getMessageId());\r\n            message.addReaction(Emoji.fromUnicode(\"U+274C\")).queue();\r\n            message.addReaction(Emoji.fromUnicode(\"U+2705\")).queue();\r\n            message.removeReaction(Emoji.fromUnicode(\"U+1F4DD\")).queue();\r\n        } else {\r\n            return;\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/me/beemo/commands/makesurvey.java b/src/main/java/me/beemo/commands/makesurvey.java
+--- a/src/main/java/me/beemo/commands/makesurvey.java	(revision a54df1bfe5169cc5efa7baaa64074d53e0c03733)
++++ b/src/main/java/me/beemo/commands/makesurvey.java	(date 1664382802635)
+@@ -11,6 +11,7 @@
+     @Override
+     public void onMessageReactionAdd(MessageReactionAddEvent event) {
+         boolean check;
++
+         if (event.getReaction().equals("📝")) {
+             //when message has 📝 then continue
+             check = true;
+@@ -37,6 +38,7 @@
+ 
+         if (check == true) {
+             Message message = event.getChannel().getHistory().getMessageById(event.getMessageId());
++            message.removeReaction(Emoji.fromUnicode("U+274C")).queue();
+             message.addReaction(Emoji.fromUnicode("U+274C")).queue();
+             message.addReaction(Emoji.fromUnicode("U+2705")).queue();
+             message.removeReaction(Emoji.fromUnicode("U+1F4DD")).queue();
+@@ -44,4 +46,4 @@
+             return;
+         }
+     }
+-}
++}
+\ No newline at end of file
+Index: .idea/BeemoJava.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule=\"true\" type=\"JAVA_MODULE\" version=\"4\">\r\n  <component name=\"NewModuleRootManager\" LANGUAGE_LEVEL=\"JDK_10\">\r\n    <output url=\"file://$MODULE_DIR$/target/classes\" />\r\n    <output-test url=\"file://$MODULE_DIR$/target/test-classes\" />\r\n    <content url=\"file://$MODULE_DIR$\">\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src/main/java\" isTestSource=\"false\" />\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src/main/resources\" type=\"java-resource\" />\r\n      <sourceFolder url=\"file://$MODULE_DIR$/src/test/java\" isTestSource=\"true\" />\r\n      <excludeFolder url=\"file://$MODULE_DIR$/target\" />\r\n    </content>\r\n    <orderEntry type=\"inheritedJdk\" />\r\n    <orderEntry type=\"sourceFolder\" forTests=\"false\" />\r\n    <orderEntry type=\"library\" name=\"Maven: net.dv8tion:JDA:5.0.0-alpha.19\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.google.code.findbugs:jsr305:3.0.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.jetbrains:annotations:23.0.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.slf4j:slf4j-api:1.7.36\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.neovisionaries:nv-websocket-client:2.14\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.squareup.okhttp3:okhttp:4.9.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: com.squareup.okio:okio:2.8.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.jetbrains.kotlin:kotlin-stdlib-common:1.4.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.jetbrains.kotlin:kotlin-stdlib:1.4.10\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: club.minnced:opus-java:1.1.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: club.minnced:opus-java-api:1.1.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: net.java.dev.jna:jna:4.4.0\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: club.minnced:opus-java-natives:1.1.1\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: org.apache.commons:commons-collections4:4.4\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: net.sf.trove4j:trove4j:3.0.3\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: com.fasterxml.jackson.core:jackson-core:2.13.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: com.fasterxml.jackson.core:jackson-databind:2.13.2.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" scope=\"RUNTIME\" name=\"Maven: com.fasterxml.jackson.core:jackson-annotations:2.13.2\" level=\"project\" />\r\n    <orderEntry type=\"library\" name=\"Maven: io.github.cdimascio:dotenv-java:2.2.4\" level=\"project\" />\r\n  </component>\r\n</module>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/BeemoJava.iml b/.idea/BeemoJava.iml
+--- a/.idea/BeemoJava.iml	(revision a54df1bfe5169cc5efa7baaa64074d53e0c03733)
++++ b/.idea/BeemoJava.iml	(date 1663972534603)
+@@ -30,5 +30,7 @@
+     <orderEntry type="library" scope="RUNTIME" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.2.2" level="project" />
+     <orderEntry type="library" scope="RUNTIME" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.13.2" level="project" />
+     <orderEntry type="library" name="Maven: io.github.cdimascio:dotenv-java:2.2.4" level="project" />
++    <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.4.1" level="project" />
++    <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.4.1" level="project" />
+   </component>
+ </module>
+\ No newline at end of file
