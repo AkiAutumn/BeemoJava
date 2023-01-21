@@ -72,7 +72,7 @@ public class DiscordBot extends ListenerAdapter {
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
         );
         commands.addCommands(
-                Commands.slash("massmove", "Moves all members of a channel")
+                Commands.slash("move", "Moves all members of a channel")
                         .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
                         .setGuildOnly(true)
         );
@@ -107,7 +107,7 @@ public class DiscordBot extends ListenerAdapter {
             case "makesurvey":
                 onMessageReceived();
                 break;
-            case "massmove":
+            case "move":
                 move(event, event.getOption("destination").getAsChannel());
                 break;
             case "pronouns":
