@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 public class massmove {
 
-    public static void move(SlashCommandInteractionEvent event, Channel destination)
+    public static void moveAll(SlashCommandInteractionEvent event, Channel destination)
     {
 
         Member member = event.getMember();

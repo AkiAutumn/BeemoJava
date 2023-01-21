@@ -23,7 +23,7 @@ import java.util.EnumSet;
 
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
-import static me.beemo.commands.massmove.move;
+import static me.beemo.commands.massmove.moveAll;
 import static me.beemo.commands.pronouns.pronounsRoleCommand;
 import static me.beemo.commands.say.say;
 import static me.beemo.commands.wake.wake;
@@ -72,7 +72,7 @@ public class DiscordBot extends ListenerAdapter {
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
         );
         commands.addCommands(
-                Commands.slash("move", "Moves all members of a channel")
+                Commands.slash("move-all", "Moves all members of a channel")
                         .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
                         .setGuildOnly(true)
         );
@@ -107,8 +107,8 @@ public class DiscordBot extends ListenerAdapter {
             case "makesurvey":
                 onMessageReceived();
                 break;
-            case "move":
-                move(event, event.getOption("destination").getAsChannel());
+            case "move-all":
+                moveAll(event, event.getOption("destination").getAsChannel());
                 break;
             case "pronouns":
                 pronounsRoleCommand(event);
