@@ -26,18 +26,20 @@ import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.massmove.moveAll;
 import static me.beemo.commands.pronouns.pronounsRoleCommand;
 import static me.beemo.commands.say.say;
+import static me.beemo.commands.status.status;
 import static me.beemo.commands.wake.wake;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
 public class DiscordBot extends ListenerAdapter {
+
+    public static JDA bot;
 
     public static void main(String[] args){
 
         Dotenv dotenv = null;
         dotenv = Dotenv.configure().load();
 
-        JDA bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
-                .setActivity(Activity.watching("Cyberpunk Edgerunners"))
+        bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
                 .addEventListeners(new DiscordBot())
                 .addEventListeners(new pronouns())
                 .addEventListeners(new colorMenu())
@@ -55,6 +57,11 @@ public class DiscordBot extends ListenerAdapter {
         commands.addCommands(
                 Commands.slash("say", "Makes the bot say what you tell it to")
                         .addOption(STRING, "content", "What the bot should say", true) // you can add required options like this too
+        );
+        commands.addCommands(
+                Commands.slash("status", "Changes my status")
+                        .addOption(STRING, "type", "Type of status ('watching', 'playing', ...)", true)
+                        .addOption(STRING, "content", "What the status should say", true)
         );
         commands.addCommands(
                 Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
@@ -89,7 +96,6 @@ public class DiscordBot extends ListenerAdapter {
         System.out.println("Beemo on the line.");
     }
 
-
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
         // Only accept commands from guilds
@@ -103,6 +109,9 @@ public class DiscordBot extends ListenerAdapter {
                 break;
             case "say":
                 say(event, event.getOption("content").getAsString()); // content is required so no null-check here
+                break;
+            case "status":
+                status(event, event.getOption("type").getAsString(), event.getOption("content").getAsString());
                 break;
             case "makesurvey":
                 onMessageReceived();
