@@ -12,22 +12,22 @@ public class status {
         switch (type.toLowerCase()){
             case "watching":
                 bot.getPresence().setActivity(Activity.watching(content));
-                event.reply("Got it :3").setEphemeral(true);
+                event.reply("Got it :3").setEphemeral(true).queue();
                 break;
             case "playing":
                 bot.getPresence().setActivity(Activity.playing(content));
-                event.reply("Got it :3").setEphemeral(true);
+                event.reply("Got it :3").setEphemeral(true).queue();
                 break;
             case "listening":
                 bot.getPresence().setActivity(Activity.listening(content));
-                event.reply("Got it :3").setEphemeral(true);
+                event.reply("Got it :3").setEphemeral(true).queue();
                 break;
             case "competing":
                 bot.getPresence().setActivity(Activity.competing(content));
-                event.reply("Got it :3").setEphemeral(true);
+                event.reply("Got it :3").setEphemeral(true).queue();
                 break;
             default:
-                event.reply("You entered an invalid activity type :(").setEphemeral(true);
+                event.reply("You entered an invalid activity type :(").setEphemeral(true).queue();
                 break;
         }
     }
