@@ -9,17 +9,25 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
@@ -36,8 +44,7 @@ public class DiscordBot extends ListenerAdapter {
 
     public static void main(String[] args){
 
-        Dotenv dotenv = null;
-        dotenv = Dotenv.configure().load();
+        Dotenv dotenv = Dotenv.configure().load();
 
         bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
                 .addEventListeners(new DiscordBot())
@@ -52,38 +59,31 @@ public class DiscordBot extends ListenerAdapter {
 
         commands.addCommands(
                 Commands.slash("shutdown", "Terminates the active bot instance")
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
-        );
-        commands.addCommands(
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.slash("say", "Makes the bot say what you tell it to")
-                        .addOption(STRING, "content", "What the bot should say", true) // you can add required options like this too
-        );
-        commands.addCommands(
+                        .addOptions(
+                                new OptionData(OptionType.STRING, "type", "The type of activity", true)
+                                        .addChoice("Watching", "watching")
+                                        .addChoice("Playing", "playing")
+                                        .addChoice("Listening", "listening")
+                                        .addChoice("Competing", "competing")
+                        )
+                        .addOption(STRING, "content", "What the bot should say", true), // you can add required options like this too
                 Commands.slash("status", "Changes my status")
                         .addOption(STRING, "type", "Type of status ('watching', 'playing', ...)", true)
-                        .addOption(STRING, "content", "What the status should say", true)
-        );
-        commands.addCommands(
+                        .addOption(STRING, "content", "What the status should say", true),
                 Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
                         .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
-        );
-        commands.addCommands(
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.slash("colors", "Sends an embed for color role assigning")
                         .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
-        );
-        commands.addCommands(
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.slash("games", "Sends an embed for game role assigning")
                         .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
-        );
-        commands.addCommands(
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.slash("move-all", "Moves all members of a channel")
                         .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
-                        .setGuildOnly(true)
-        );
-        commands.addCommands(
+                        .setGuildOnly(true),
                 Commands.slash("wake", "Wakes deafened people")
                         .addOption(USER, "user", "Who to wake up", true)
                         .addOption(INTEGER, "amount", "How often to move")
@@ -114,7 +114,7 @@ public class DiscordBot extends ListenerAdapter {
                 status(event, event.getOption("type").getAsString(), event.getOption("content").getAsString());
                 break;
             case "makesurvey":
-                onMessageReceived();
+                //onMessageReceived();
                 break;
             case "move-all":
                 moveAll(event, event.getOption("destination").getAsChannel());
@@ -140,7 +140,12 @@ public class DiscordBot extends ListenerAdapter {
         }
     }
 
-    public void onMessageReceived() {
+    public void onMessageReceived(MessageReceivedEvent event) {
+        Message message = event.getMessage();
+
+        if(message.getMentions().getUsers().contains(bot.getSelfUser())){
+            message.reply(beemoIdleReply()).queue();
+        }
     }
 
     @Override
@@ -149,4 +154,28 @@ public class DiscordBot extends ListenerAdapter {
         event.deferEdit().queue();
     }
 
+    public static String beemoIdleReply(){
+
+        int randomNumber = ThreadLocalRandom.current().nextInt(0, 13 + 1);
+
+        String[] replies = {
+                "Beep",
+                "Boop",
+                "Boob",
+                "Hi",
+                "Whassaaap",
+                "Huh?",
+                "*triggered*",
+                "Error",
+                "java.lang.NullPointerException",
+                "?",
+                "!?",
+                "Baumkuchen",
+                "Für Fortnite!",
+                "Daddy?",
+                "Mommy?"
+        };
+
+        return replies[randomNumber];
+    }
 }
