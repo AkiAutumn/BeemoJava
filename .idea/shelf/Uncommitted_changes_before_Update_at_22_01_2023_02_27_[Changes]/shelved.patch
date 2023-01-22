@@ -1,0 +1,19 @@
+Index: .idea/artifacts/beemoJava.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/artifacts/beemoJava.xml b/.idea/artifacts/beemoJava.xml
+deleted file mode 100644
+--- a/.idea/artifacts/beemoJava.xml	(revision ff2eb11ff1e9b0ed024c649a43893234d33b5144)
++++ /dev/null	(revision ff2eb11ff1e9b0ed024c649a43893234d33b5144)
+@@ -1,8 +0,0 @@
+-<component name="ArtifactManager">
+-  <artifact type="jar" name="beemoJava">
+-    <output-path>$PROJECT_DIR$</output-path>
+-    <root id="archive" name="beemoJava.jar">
+-      <element id="module-output" name="BeemoJava" />
+-    </root>
+-  </artifact>
+-</component>
+\ No newline at end of file
