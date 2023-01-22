@@ -82,7 +82,8 @@ public class DiscordBot extends ListenerAdapter {
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.slash("move-all", "Moves all members of a channel")
                         .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
-                        .setGuildOnly(true),
+                        .setGuildOnly(true)
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
                 Commands.slash("wake", "Wakes deafened people")
                         .addOption(USER, "user", "Who to wake up", true)
                         .addOption(INTEGER, "amount", "How often to move")
@@ -113,7 +114,7 @@ public class DiscordBot extends ListenerAdapter {
                 status(event, event.getOption("type").getAsString(), event.getOption("content").getAsString());
                 break;
             case "makesurvey":
-                //onMessageReceived();
+                //onMessageReceived(); redundant function reworked, this line doesn't work anymore
                 break;
             case "move-all":
                 moveAll(event, event.getOption("destination").getAsChannel());
