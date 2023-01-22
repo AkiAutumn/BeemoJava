@@ -61,6 +61,8 @@ public class DiscordBot extends ListenerAdapter {
                 Commands.slash("shutdown", "Terminates the active bot instance")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.slash("say", "Makes the bot say what you tell it to")
+                        .addOption(STRING, "content", "What the bot should say", true), // you can add required options like this too
+                Commands.slash("status", "Changes my status")
                         .addOptions(
                                 new OptionData(OptionType.STRING, "type", "The type of activity", true)
                                         .addChoice("Watching", "watching")
@@ -68,9 +70,6 @@ public class DiscordBot extends ListenerAdapter {
                                         .addChoice("Listening", "listening")
                                         .addChoice("Competing", "competing")
                         )
-                        .addOption(STRING, "content", "What the bot should say", true), // you can add required options like this too
-                Commands.slash("status", "Changes my status")
-                        .addOption(STRING, "type", "Type of status ('watching', 'playing', ...)", true)
                         .addOption(STRING, "content", "What the status should say", true),
                 Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
                         .setGuildOnly(true)
