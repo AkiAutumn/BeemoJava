@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -58,7 +59,7 @@ public class DiscordBot extends ListenerAdapter {
         CommandListUpdateAction commands = bot.updateCommands();
 
         commands.addCommands(
-                Commands.slash("shutdown", "Terminates the active bot instance")
+                Commands.user("Shutdown")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.slash("say", "Makes the bot say what you tell it to")
                         .addOption(STRING, "content", "What the bot should say", true), // you can add required options like this too
@@ -96,6 +97,18 @@ public class DiscordBot extends ListenerAdapter {
         System.out.println("Beemo on the line.");
     }
 
+    public void onUserContextInteraction(UserContextInteractionEvent event)
+    {
+        switch (event.getName().toLowerCase()) {
+            case "shutdown":
+                event.reply("Killing myself now ... :(").setEphemeral(true).queue();
+                bot.shutdown();
+                break;
+            default:
+                event.reply("I don't recognise this command :(").setEphemeral(true).queue();
+        }
+    }
+
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
     {
         // Only accept commands from guilds
@@ -103,10 +116,6 @@ public class DiscordBot extends ListenerAdapter {
             return;
         switch (event.getName())
         {
-            case "shutdown":
-                event.reply("Killing myself now ... :c").setEphemeral(true).queue();
-                System.exit(0);
-                break;
             case "say":
                 say(event, event.getOption("content").getAsString()); // content is required so no null-check here
                 break;
