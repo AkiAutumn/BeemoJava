@@ -1,0 +1,9 @@
+me\beemo\commands\makesurvey.class
+me\beemo\commands\say.class
+me\beemo\commands\wake.class
+me\beemo\commands\pronouns.class
+me\beemo\DiscordBot.class
+me\beemo\commands\massmove.class
+me\beemo\commands\games.class
+me\beemo\commands\colorMenu.class
+me\beemo\commands\status.class

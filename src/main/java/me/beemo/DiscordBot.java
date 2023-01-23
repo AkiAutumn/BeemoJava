@@ -36,6 +36,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Random;
@@ -147,11 +151,13 @@ public class DiscordBot extends ListenerAdapter {
             case "beemo info":
                 EmbedBuilder embed = new EmbedBuilder();
                 embed.setTitle("Bot Info");
-                embed.addField("Rest Ping", bot.getRestPing().toString(), true);
-                embed.addField("Time Created", bot.getSelfUser().getTimeCreated().toString(), true);
-                embed.addField("Operating System", System.getProperty("os.name") + " " + System.getProperty("os.version"), true);
+                embed.addField("Rest Ping", bot.getGatewayPing() + " ms", false);
+                embed.addField("Memory", humanReadableByteCountBin((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())) + " / " + humanReadableByteCountBin(Runtime.getRuntime().maxMemory()), false);
+                embed.addField("Operating System", System.getProperty("os.name"), false);
                 embed.addField("Java Version", System.getProperty("java.version"), true);
-                embed.addField("Memory", ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())) + "B / " + (Runtime.getRuntime().totalMemory()) + "B", true);
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+                embed.setFooter(dtf.format(now));
                 embed.setColor(Color.cyan);
                 event.replyEmbeds(embed.build()).setEphemeral(true).queue();
                 break;
@@ -249,5 +255,20 @@ public class DiscordBot extends ListenerAdapter {
         pw.flush();
         pw.close();
         config = (JSONObject) new JSONParser().parse(new FileReader("config.json"));
+    }
+
+    public static String humanReadableByteCountBin(long bytes) {
+        long absB = bytes == Long.MIN_VALUE ? Long.MAX_VALUE : Math.abs(bytes);
+        if (absB < 1024) {
+            return bytes + " B";
+        }
+        long value = absB;
+        CharacterIterator ci = new StringCharacterIterator("KMGTPE");
+        for (int i = 40; i >= 0 && absB > 0xfffccccccccccccL >> i; i -= 10) {
+            value >>= 10;
+            ci.next();
+        }
+        value *= Long.signum(bytes);
+        return String.format("%.1f %ciB", value / 1024.0, ci.current());
     }
 }
