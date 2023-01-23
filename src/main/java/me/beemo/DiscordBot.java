@@ -55,7 +55,7 @@ public class DiscordBot extends ListenerAdapter {
     public static void main(String[] args) throws IOException, ParseException {
 
         Dotenv dotenv = Dotenv.configure().load();
-        config = (JSONObject) new JSONParser().parse(new FileReader("JSONExample.json"));
+        config = (JSONObject) new JSONParser().parse(new FileReader("config.json"));
 
         bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
                 .addEventListeners(new DiscordBot())
