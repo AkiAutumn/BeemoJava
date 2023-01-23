@@ -126,7 +126,7 @@ public class DiscordBot extends ListenerAdapter {
                 break;
             case "update":
                 try {
-                    Runtime.getRuntime().exec("cmd /c start \"\" update.bat");
+                    Runtime.getRuntime().exec("./update.sh");
                     event.reply("Updating myself now ... :D").setEphemeral(true).queue();
                     bot.shutdown();
                 } catch (IOException e) {
