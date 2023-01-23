@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Random;
@@ -60,6 +61,8 @@ public class DiscordBot extends ListenerAdapter {
 
         commands.addCommands(
                 Commands.user("Shutdown")
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                Commands.user("Update")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.slash("say", "Makes the bot say what you tell it to")
                         .addOption(STRING, "content", "What the bot should say", true), // you can add required options like this too
@@ -103,6 +106,16 @@ public class DiscordBot extends ListenerAdapter {
             case "shutdown":
                 event.reply("Killing myself now ... :(").setEphemeral(true).queue();
                 bot.shutdown();
+                break;
+            case "update":
+                try {
+                    Runtime.getRuntime().exec("cmd /c start \"\" update.bat");
+                    event.reply("Updating myself now ... :D").setEphemeral(true).queue();
+                    bot.shutdown();
+                } catch (IOException e) {
+                    event.reply("Update failed - " + e).setEphemeral(true).queue();
+                    throw new RuntimeException(e);
+                }
                 break;
             default:
                 event.reply("I don't recognise this command :(").setEphemeral(true).queue();
