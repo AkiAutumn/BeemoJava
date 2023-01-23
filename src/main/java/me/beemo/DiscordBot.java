@@ -52,7 +52,7 @@ public class DiscordBot extends ListenerAdapter {
     public static JDA bot;
     public static JSONObject config;
 
-    public static void main(String[] args) throws IOException, ParseException {
+    public static void main(String[] args) throws ParseException, IOException {
 
         Dotenv dotenv = Dotenv.configure().load();
         config = (JSONObject) new JSONParser().parse(new FileReader("config.json"));
