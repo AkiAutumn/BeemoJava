@@ -5,6 +5,7 @@ import me.beemo.commands.colorMenu;
 import me.beemo.commands.games;
 import me.beemo.commands.makesurvey;
 import me.beemo.commands.pronouns;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -25,10 +26,12 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -43,7 +46,7 @@ import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.massmove.moveAll;
 import static me.beemo.commands.pronouns.pronounsRoleCommand;
 import static me.beemo.commands.say.say;
-import static me.beemo.commands.status.status;
+import static me.beemo.commands.status.updateBotStatus;
 import static me.beemo.commands.wake.wake;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
@@ -59,7 +62,7 @@ public class DiscordBot extends ListenerAdapter {
         //load config
 
         JSONParser parser = new JSONParser();
-        config = (JSONObject) parser.parse(new FileReader("./config.json"));
+        config = (JSONObject) parser.parse(new FileReader("config.json"));
 
 
         bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
@@ -78,6 +81,7 @@ public class DiscordBot extends ListenerAdapter {
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.user("Update")
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                Commands.user("Beemo Info"),
                 Commands.slash("say", "Makes the bot say what you tell it to")
                         .addOption(STRING, "content", "What the bot should say", true), // you can add required options like this too
                 Commands.slash("status", "Changes my status")
@@ -115,15 +119,16 @@ public class DiscordBot extends ListenerAdapter {
         System.out.println("Beemo on the line.");
 
         //get last activity status and set it again
-        Object lastActivityObject = config.get("lastActivity");
-        if(lastActivityObject != null){
-            Activity lastActivity = (Activity) lastActivityObject;
-            bot.getPresence().setActivity(lastActivity);
+        JSONArray lastActivityArray = (JSONArray) config.get("lastActivity");
+        if (lastActivityArray != null) {
+            updateBotStatus(lastActivityArray.get(0).toString(), lastActivityArray.get(1).toString());
+            System.out.println("Successfully set last activity.");
+        } else {
+            System.out.println("Unable to set last activity.");
         }
     }
 
-    public void onUserContextInteraction(UserContextInteractionEvent event)
-    {
+    public void onUserContextInteraction(UserContextInteractionEvent event) {
         switch (event.getName().toLowerCase()) {
             case "shutdown":
                 event.reply("Killing myself now ... :(").setEphemeral(true).queue();
@@ -139,23 +144,37 @@ public class DiscordBot extends ListenerAdapter {
                     throw new RuntimeException(e);
                 }
                 break;
+            case "beemo info":
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setTitle("Bot Info");
+                embed.addField("Rest Ping", bot.getRestPing().toString(), true);
+                embed.addField("Time Created", bot.getSelfUser().getTimeCreated().toString(), true);
+                embed.addField("Operating System", System.getProperty("os.name") + " " + System.getProperty("os.version"), true);
+                embed.addField("Java Version", System.getProperty("java.version"), true);
+                embed.addField("Memory", ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())) + "B / " + (Runtime.getRuntime().totalMemory()) + "B", true);
+                embed.setColor(Color.cyan);
+                event.replyEmbeds(embed.build()).setEphemeral(true).queue();
+                break;
             default:
                 event.reply("I don't recognise this command :(").setEphemeral(true).queue();
         }
     }
 
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event)
-    {
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         // Only accept commands from guilds
         if (event.getGuild() == null)
             return;
-        switch (event.getName())
-        {
+        switch (event.getName()) {
             case "say":
                 say(event, event.getOption("content").getAsString()); // content is required so no null-check here
                 break;
             case "status":
-                status(event, event.getOption("type").getAsString(), event.getOption("content").getAsString());
+                try {
+                    updateBotStatus(event.getOption("type").getAsString(), event.getOption("content").getAsString());
+                    event.reply("Got it :3").setEphemeral(true).queue();
+                } catch (IOException | ParseException e) {
+                    System.out.println("Status Command: " + e);
+                }
                 break;
             case "makesurvey":
                 //onMessageReceived(); redundant function reworked, this line doesn't work anymore
@@ -187,18 +206,18 @@ public class DiscordBot extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         Message message = event.getMessage();
 
-        if(message.getMentions().getUsers().contains(bot.getSelfUser())){
-            message.reply(beemoIdleReply()).queue();
-        }
+        if (message != null)
+            if (message.getMentions().getUsers().contains(bot.getSelfUser())) {
+                message.reply(beemoIdleReply()).queue();
+            }
     }
 
     @Override
-    public void onButtonInteraction(ButtonInteractionEvent event)
-    {
+    public void onButtonInteraction(ButtonInteractionEvent event) {
         event.deferEdit().queue();
     }
 
-    public static String beemoIdleReply(){
+    public static String beemoIdleReply() {
 
         int randomNumber = ThreadLocalRandom.current().nextInt(0, 13 + 1);
 
@@ -223,16 +242,12 @@ public class DiscordBot extends ListenerAdapter {
         return replies[randomNumber];
     }
 
-    public static void writeToConfig(String key, Object object) throws IOException, ParseException {
-        config.put(key, object);
-
-        // writing JSON to file:"JSONExample.json" in cwd
+    public static void saveConfig() throws IOException, ParseException {
         PrintWriter pw = new PrintWriter("config.json");
         pw.write(config.toJSONString());
 
         pw.flush();
         pw.close();
-
-        config = (JSONObject) new JSONParser().parse(new FileReader("JSONExample.json"));
+        config = (JSONObject) new JSONParser().parse(new FileReader("config.json"));
     }
 }
