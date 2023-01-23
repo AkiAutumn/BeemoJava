@@ -69,10 +69,10 @@ public class DiscordBot extends ListenerAdapter {
                 Commands.slash("status", "Changes my status")
                         .addOptions(
                                 new OptionData(OptionType.STRING, "type", "The type of activity", true)
-                                        .addChoice("Watching", "watching")
-                                        .addChoice("Playing", "playing")
-                                        .addChoice("Listening", "listening")
-                                        .addChoice("Competing", "competing")
+                                        .addChoice("Watching ...", "watching")
+                                        .addChoice("Playing ...", "playing")
+                                        .addChoice("Listening to ...", "listening")
+                                        .addChoice("Competing in ...", "competing")
                         )
                         .addOption(STRING, "content", "What the status should say", true),
                 Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
