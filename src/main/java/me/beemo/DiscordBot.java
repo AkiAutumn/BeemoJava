@@ -22,10 +22,17 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Random;
@@ -43,10 +50,12 @@ import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 public class DiscordBot extends ListenerAdapter {
 
     public static JDA bot;
+    public static JSONObject config;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException, ParseException {
 
         Dotenv dotenv = Dotenv.configure().load();
+        config = (JSONObject) new JSONParser().parse(new FileReader("JSONExample.json"));
 
         bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
                 .addEventListeners(new DiscordBot())
@@ -69,6 +78,7 @@ public class DiscordBot extends ListenerAdapter {
                 Commands.slash("status", "Changes my status")
                         .addOptions(
                                 new OptionData(OptionType.STRING, "type", "The type of activity", true)
+                                        .addChoice("(Custom Text)", "custom")
                                         .addChoice("Watching ...", "watching")
                                         .addChoice("Playing ...", "playing")
                                         .addChoice("Listening to ...", "listening")
@@ -98,6 +108,13 @@ public class DiscordBot extends ListenerAdapter {
         commands.queue();
 
         System.out.println("Beemo on the line.");
+
+        //get last activity status and set it again
+        Object lastActivityObject = config.get("lastActivity");
+        if(lastActivityObject != null){
+            Activity lastActivity = (Activity) lastActivityObject;
+            bot.getPresence().setActivity(lastActivity);
+        }
     }
 
     public void onUserContextInteraction(UserContextInteractionEvent event)
@@ -199,5 +216,18 @@ public class DiscordBot extends ListenerAdapter {
         };
 
         return replies[randomNumber];
+    }
+
+    public static void writeToConfig(String key, Object object) throws IOException, ParseException {
+        config.put(key, object);
+
+        // writing JSON to file:"JSONExample.json" in cwd
+        PrintWriter pw = new PrintWriter("config.json");
+        pw.write(config.toJSONString());
+
+        pw.flush();
+        pw.close();
+
+        config = (JSONObject) new JSONParser().parse(new FileReader("JSONExample.json"));
     }
 }

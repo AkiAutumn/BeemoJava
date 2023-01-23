@@ -32,5 +32,8 @@
     <orderEntry type="library" name="Maven: io.github.cdimascio:dotenv-java:2.2.4" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.4.1" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.4.1" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
+    <orderEntry type="library" name="Maven: junit:junit:4.10" level="project" />
+    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
   </component>
 </module>
