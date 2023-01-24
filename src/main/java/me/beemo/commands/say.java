@@ -6,5 +6,6 @@ public class say {
     public static void say(SlashCommandInteractionEvent event, String content)
     {
         event.getChannel().sendMessage(content).queue();
+        event.reply("Gotcha! ;)").setEphemeral(true).queue();
     }
 }
