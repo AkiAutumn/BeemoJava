@@ -84,7 +84,6 @@ public class DiscordBot extends ListenerAdapter {
                 Commands.slash("status", "Changes my status")
                         .addOptions(
                                 new OptionData(OptionType.STRING, "type", "The type of activity", true)
-                                        .addChoice("(Custom Text)", "custom")
                                         .addChoice("Watching ...", "watching")
                                         .addChoice("Playing ...", "playing")
                                         .addChoice("Listening to ...", "listening")
@@ -132,7 +131,7 @@ public class DiscordBot extends ListenerAdapter {
             case "make survey":
                 event.getInteraction().getTarget().addReaction(Emoji.fromUnicode("U+274C")).queue();
                 event.getInteraction().getTarget().addReaction(Emoji.fromUnicode("U+2705")).queue();
-                event.reply("Okidoki").queue();
+                event.reply("Okidoki").setEphemeral(true).queue();
                 break;
         }
     }

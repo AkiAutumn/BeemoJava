@@ -28,10 +28,6 @@ public class status {
             case "competing":
                 activity = Activity.competing(content);
                 break;
-            case "custom":
-                //activity = Activity.of(Activity.ActivityType.CUSTOM_STATUS, content);
-                activity = Activity.of(Activity.ActivityType.COMPETING, content);
-                break;
         }
 
         bot.getPresence().setActivity(activity);
