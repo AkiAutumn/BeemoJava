@@ -143,6 +143,7 @@ public class DiscordBot extends ListenerAdapter {
                     Runtime.getRuntime().exec("./update.sh");
                     event.reply("Updating myself now ... :D").setEphemeral(true).queue();
                     bot.shutdown();
+                    System.exit(0);
                 } catch (IOException e) {
                     event.reply("Update failed - " + e).setEphemeral(true).queue();
                     throw new RuntimeException(e);
