@@ -3,27 +3,24 @@ package me.beemo;
 import io.github.cdimascio.dotenv.Dotenv;
 import me.beemo.commands.colorMenu;
 import me.beemo.commands.games;
-import me.beemo.commands.makesurvey;
 import me.beemo.commands.pronouns;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.json.simple.JSONArray;
@@ -32,7 +29,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.awt.*;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -40,9 +36,7 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static me.beemo.commands.colorMenu.colorRoleCommand;
@@ -74,7 +68,6 @@ public class DiscordBot extends ListenerAdapter {
                 .addEventListeners(new pronouns())
                 .addEventListeners(new colorMenu())
                 .addEventListeners(new games())
-                .addEventListeners(new makesurvey())
                 .build();
 
         // These commands might take a few minutes to be active after creation/update/delete
@@ -87,7 +80,7 @@ public class DiscordBot extends ListenerAdapter {
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                 Commands.user("Beemo Info"),
                 Commands.slash("say", "Makes the bot say what you tell it to")
-                        .addOption(STRING, "content", "What the bot should say", true), // you can add required options like this too
+                        .addOption(STRING, "content", "What the bot should say", true),
                 Commands.slash("status", "Changes my status")
                         .addOptions(
                                 new OptionData(OptionType.STRING, "type", "The type of activity", true)
@@ -115,7 +108,9 @@ public class DiscordBot extends ListenerAdapter {
                         .addOption(USER, "user", "Who to wake up", true)
                         .addOption(INTEGER, "amount", "How often to move")
                         .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS))
+                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
+                Commands.message("Make Survey")
+                        .setGuildOnly(true)
         );
         // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
         commands.queue();
@@ -129,6 +124,16 @@ public class DiscordBot extends ListenerAdapter {
             System.out.println("Successfully set last activity.");
         } else {
             System.out.println("Unable to set last activity.");
+        }
+    }
+
+    public void onMessageContextInteraction(MessageContextInteractionEvent event) {
+        switch (event.getName().toLowerCase()) {
+            case "make survey":
+                event.getInteraction().getTarget().addReaction(Emoji.fromUnicode("U+274C")).queue();
+                event.getInteraction().getTarget().addReaction(Emoji.fromUnicode("U+2705")).queue();
+                event.reply("Okidoki").queue();
+                break;
         }
     }
 
@@ -183,9 +188,6 @@ public class DiscordBot extends ListenerAdapter {
                     System.out.println("Status Command: " + e);
                 }
                 break;
-            case "makesurvey":
-                //onMessageReceived(); redundant function reworked, this line doesn't work anymore
-                break;
             case "move-all":
                 moveAll(event, event.getOption("destination").getAsChannel());
                 break;
@@ -213,10 +215,9 @@ public class DiscordBot extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         Message message = event.getMessage();
 
-        if (message != null)
-            if (message.getMentions().getUsers().contains(bot.getSelfUser())) {
-                message.reply(beemoIdleReply()).queue();
-            }
+        if (message.getMentions().getUsers().contains(bot.getSelfUser())) {
+            message.reply(beemoIdleReply()).queue();
+        }
     }
 
     @Override
