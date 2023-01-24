@@ -5,6 +5,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 public class say {
     public static void say(SlashCommandInteractionEvent event, String content)
     {
-        event.reply(content).queue(); // This requires no permissions!
+        event.getChannel().sendMessage(content).queue();
     }
 }
