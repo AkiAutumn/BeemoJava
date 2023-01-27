@@ -108,7 +108,8 @@ public class DiscordBot extends ListenerAdapter {
                         .addOption(INTEGER, "amount", "How often to move")
                         .setGuildOnly(true)
                         .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
-                Commands.message("Make Survey")
+                Commands.slash("poll", "Sends a poll message")
+                        .addOption(STRING, "options", "Choices (separate by comma)")
                         .setGuildOnly(true)
         );
         // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
@@ -127,13 +128,7 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     public void onMessageContextInteraction(MessageContextInteractionEvent event) {
-        switch (event.getName().toLowerCase()) {
-            case "make survey":
-                event.getInteraction().getTarget().addReaction(Emoji.fromUnicode("U+274C")).queue();
-                event.getInteraction().getTarget().addReaction(Emoji.fromUnicode("U+2705")).queue();
-                event.reply("Okidoki").setEphemeral(true).queue();
-                break;
-        }
+
     }
 
     public void onUserContextInteraction(UserContextInteractionEvent event) {
