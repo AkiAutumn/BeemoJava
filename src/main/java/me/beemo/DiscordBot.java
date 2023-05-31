@@ -29,9 +29,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.awt.*;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.time.LocalDateTime;
@@ -210,7 +210,44 @@ public class DiscordBot extends ListenerAdapter {
         Message message = event.getMessage();
 
         if (message.getMentions().getUsers().contains(bot.getSelfUser())) {
-            message.reply(beemoIdleReply()).queue();
+            message.reply(chatGPT(message.getContentDisplay())).queue();
+        }
+    }
+
+    public static String chatGPT(String message) {
+        String url = "https://api.openai.com/vl/chat/comptetions";
+        String apiKey = "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";
+        String model = "gpt-3.5-turbo";
+
+        try {
+            // Create the HTTP POST request
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Authorization", "Bearer " + apiKey);
+            con.setRequestProperty("Content-Type", "application/json");
+
+            // Build the request body
+            String body = "{\"model\": \"" + model + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + message + "\"}]}";
+            con.setDoOutput(true);
+            OutputStreamWriter writer = new OutputStreamWriter(con.getOutputStream());
+            writer.write(body);
+            writer.flush();
+            writer.close();
+
+            // Get the response
+            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            return (response.toString().split("\"content\":\"")[1].split("\"")[0]).substring(4);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
