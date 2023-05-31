@@ -117,6 +117,7 @@ public class DiscordBot extends ListenerAdapter {
             commands.queue();
 
             System.out.println("Beemo on the line.");
+            getAuditLogChannel().sendMessage("Beemo deployed! >:3").queue();
 
             //get last activity status and set it again
             JSONArray lastActivityArray = (JSONArray) config.get("lastActivity");
@@ -128,16 +129,18 @@ public class DiscordBot extends ListenerAdapter {
             }
         } catch (Exception e){
             try {
-                TextChannel textChannel = getOnlyFansChannel();
-                textChannel.sendMessage(e.toString()).queue();
-            } catch(Exception e1){
-                return;
-            }
+                getOnlyFansChannel().sendMessage(e.toString()).queue();
+            } catch(Exception ignored){}
         }
     }
 
     public static TextChannel getOnlyFansChannel(){
         TextChannel textChannel = bot.getGuildById("425019763950092288").getTextChannelById("748137772501434498"); //our onlyfans channel
+        return textChannel;
+    }
+
+    public static TextChannel getAuditLogChannel(){
+        TextChannel textChannel = bot.getGuildById("425019763950092288").getTextChannelById("845732635350794270"); //our onlyfans channel
         return textChannel;
     }
 
@@ -153,8 +156,11 @@ public class DiscordBot extends ListenerAdapter {
                 break;
             case "update":
                 try {
-                    TextChannel auditLog = bot.getGuildById("425019763950092288").getTextChannelById("845732635350794270");
-                    auditLog.sendMessage("Self-update requested by " + event.getUser().getName());
+                    try {
+                        getAuditLogChannel().sendMessage("Self-update requested by " + event.getUser().getName()).queue();
+                    } catch(NullPointerException nullPointerException){
+                        System.out.println(nullPointerException.toString());
+                    }
                     Runtime.getRuntime().exec("./update.sh");
                     event.reply("Updating myself now ... :D").setEphemeral(true).queue();
                     bot.shutdown();
