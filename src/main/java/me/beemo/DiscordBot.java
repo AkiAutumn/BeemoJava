@@ -11,8 +11,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
@@ -130,12 +128,17 @@ public class DiscordBot extends ListenerAdapter {
             }
         } catch (Exception e){
             try {
-                TextChannel textChannel = bot.getGuildById("425019763950092288").getTextChannelById("748137772501434498");
+                TextChannel textChannel = getOnlyFansChannel();
                 textChannel.sendMessage(e.toString()).queue();
             } catch(Exception e1){
                 return;
             }
         }
+    }
+
+    public static TextChannel getOnlyFansChannel(){
+        TextChannel textChannel = bot.getGuildById("425019763950092288").getTextChannelById("748137772501434498"); //our onlyfans channel
+        return textChannel;
     }
 
     public void onMessageContextInteraction(MessageContextInteractionEvent event) {
@@ -150,6 +153,8 @@ public class DiscordBot extends ListenerAdapter {
                 break;
             case "update":
                 try {
+                    TextChannel auditLog = bot.getGuildById("425019763950092288").getTextChannelById("845732635350794270");
+                    auditLog.sendMessage("Self-update requested by " + event.getUser().getName());
                     Runtime.getRuntime().exec("./update.sh");
                     event.reply("Updating myself now ... :D").setEphemeral(true).queue();
                     bot.shutdown();
