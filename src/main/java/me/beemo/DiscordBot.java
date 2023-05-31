@@ -232,12 +232,13 @@ public class DiscordBot extends ListenerAdapter {
         Message message = event.getMessage();
 
         if (message.getMentions().getUsers().contains(bot.getSelfUser())) {
-            message.reply(chatGPT(message.getContentDisplay())).queue();
+            String reply = chatGPT(message.getContentDisplay());
+            message.reply(reply).queue();
         }
     }
 
     public static String chatGPT(String message) {
-        String url = "https://api.openai.com/vl/chat/comptetions";
+        String url = "https://api.openai.com/v1/chat/completions";
         String apiKey = "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";
         String model = "gpt-3.5-turbo";
 
