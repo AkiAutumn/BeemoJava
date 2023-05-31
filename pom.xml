@@ -42,6 +42,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.barqawiz</groupId>
+            <artifactId>intellijava.core</artifactId>
+            <version>0.8.0</version>
+        </dependency>
     </dependencies>
 
 </project>
