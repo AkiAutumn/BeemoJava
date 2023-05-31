@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -53,77 +55,86 @@ public class DiscordBot extends ListenerAdapter {
     public static JDA bot;
     public static JSONObject config;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
 
-        Dotenv dotenv = Dotenv.configure().load();
+        try {
+            Dotenv dotenv = Dotenv.configure().load();
 
-        //load config
+            //load config
 
-        JSONParser parser = new JSONParser();
-        config = (JSONObject) parser.parse(new FileReader("config.json"));
+            JSONParser parser = new JSONParser();
+            config = (JSONObject) parser.parse(new FileReader("config.json"));
 
 
-        bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
-                .addEventListeners(new DiscordBot())
-                .addEventListeners(new pronouns())
-                .addEventListeners(new colorMenu())
-                .addEventListeners(new games())
-                .build();
+            bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
+                    .addEventListeners(new DiscordBot())
+                    .addEventListeners(new pronouns())
+                    .addEventListeners(new colorMenu())
+                    .addEventListeners(new games())
+                    .build();
 
-        // These commands might take a few minutes to be active after creation/update/delete
-        CommandListUpdateAction commands = bot.updateCommands();
+            // These commands might take a few minutes to be active after creation/update/delete
+            CommandListUpdateAction commands = bot.updateCommands();
 
-        commands.addCommands(
-                Commands.user("Shutdown")
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.user("Update")
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.user("Beemo Info"),
-                Commands.slash("say", "Makes the bot say what you tell it to")
-                        .addOption(STRING, "content", "What the bot should say", true),
-                Commands.slash("status", "Changes my status")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "type", "The type of activity", true)
-                                        .addChoice("Watching ...", "watching")
-                                        .addChoice("Playing ...", "playing")
-                                        .addChoice("Listening to ...", "listening")
-                                        .addChoice("Competing in ...", "competing")
-                        )
-                        .addOption(STRING, "content", "What the status should say", true),
-                Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.slash("colors", "Sends an embed for color role assigning")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.slash("games", "Sends an embed for game role assigning")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.slash("move-all", "Moves all members of a channel")
-                        .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
-                Commands.slash("wake", "Wakes deafened people")
-                        .addOption(USER, "user", "Who to wake up", true)
-                        .addOption(INTEGER, "amount", "How often to move")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
-                Commands.slash("poll", "Sends a poll message")
-                        .addOption(STRING, "options", "Choices (separate by comma)")
-                        .setGuildOnly(true)
-        );
-        // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
-        commands.queue();
+            commands.addCommands(
+                    Commands.user("Shutdown")
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.user("Update")
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.user("Beemo Info"),
+                    Commands.slash("say", "Makes the bot say what you tell it to")
+                            .addOption(STRING, "content", "What the bot should say", true),
+                    Commands.slash("status", "Changes my status")
+                            .addOptions(
+                                    new OptionData(OptionType.STRING, "type", "The type of activity", true)
+                                            .addChoice("Watching ...", "watching")
+                                            .addChoice("Playing ...", "playing")
+                                            .addChoice("Listening to ...", "listening")
+                                            .addChoice("Competing in ...", "competing")
+                            )
+                            .addOption(STRING, "content", "What the status should say", true),
+                    Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("colors", "Sends an embed for color role assigning")
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("games", "Sends an embed for game role assigning")
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("move-all", "Moves all members of a channel")
+                            .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
+                    Commands.slash("wake", "Wakes deafened people")
+                            .addOption(USER, "user", "Who to wake up", true)
+                            .addOption(INTEGER, "amount", "How often to move")
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
+                    Commands.slash("poll", "Sends a poll message")
+                            .addOption(STRING, "options", "Choices (separate by comma)")
+                            .setGuildOnly(true)
+            );
+            // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
+            commands.queue();
 
-        System.out.println("Beemo on the line.");
+            System.out.println("Beemo on the line.");
 
-        //get last activity status and set it again
-        JSONArray lastActivityArray = (JSONArray) config.get("lastActivity");
-        if (lastActivityArray != null) {
-            updateBotStatus(lastActivityArray.get(0).toString(), lastActivityArray.get(1).toString());
-            System.out.println("Successfully set last activity.");
-        } else {
-            System.out.println("Unable to set last activity.");
+            //get last activity status and set it again
+            JSONArray lastActivityArray = (JSONArray) config.get("lastActivity");
+            if (lastActivityArray != null) {
+                updateBotStatus(lastActivityArray.get(0).toString(), lastActivityArray.get(1).toString());
+                System.out.println("Successfully set last activity.");
+            } else {
+                System.out.println("Unable to set last activity.");
+            }
+        } catch (Exception e){
+            try {
+                TextChannel textChannel = bot.getGuildById("425019763950092288").getTextChannelById("748137772501434498");
+                textChannel.sendMessage(e.toString()).queue();
+            } catch(Exception e1){
+                return;
+            }
         }
     }
 
@@ -144,7 +155,7 @@ public class DiscordBot extends ListenerAdapter {
                     bot.shutdown();
                     System.exit(0);
                 } catch (IOException e) {
-                    event.reply("Update failed - " + e).setEphemeral(true).queue();
+                    event.reply("Update failed: " + e).setEphemeral(true).queue();
                     throw new RuntimeException(e);
                 }
                 break;
