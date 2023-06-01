@@ -109,7 +109,6 @@ public class DiscordBot extends ListenerAdapter {
         commands.queue();
 
         System.out.println("Beemo on the line.");
-        getAuditLogChannel().sendMessage("Beemo deployed! >:3").queue();
 
         //load config
         JSONParser parser = new JSONParser();
@@ -241,7 +240,8 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     public static String chatGPT(String text) throws Exception {
-        RemoteLanguageModel model = new RemoteLanguageModel("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", "openai");
+        Dotenv dotenv = Dotenv.configure().load();
+        RemoteLanguageModel model = new RemoteLanguageModel(dotenv.get("OPENAI"), "openai");
 
         LanguageModelInput input = new LanguageModelInput
                 .Builder(text)
