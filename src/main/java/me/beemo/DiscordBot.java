@@ -228,7 +228,8 @@ public class DiscordBot extends ListenerAdapter {
         String CONTENT;
         JSONObject jsonObject = (JSONObject) config.get("personality");
         if (jsonObject != null) {
-            CONTENT = jsonObject.values().toString();
+            CONTENT = jsonObject.toJSONString();
+            reportToDeveloper(CONTENT);
         } else {
             CONTENT = "You are a Discord bot. You are inspired by BMO from Adventure Time.";
             config.put("personality", CONTENT);
