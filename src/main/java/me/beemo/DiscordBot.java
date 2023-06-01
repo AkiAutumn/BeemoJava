@@ -234,8 +234,6 @@ public class DiscordBot extends ListenerAdapter {
             config.put("personality", CONTENT);
         }
 
-        reportToDeveloper(CONTENT);
-
         try {
             URL url = new URL(OPENAI_API_ENDPOINT);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
