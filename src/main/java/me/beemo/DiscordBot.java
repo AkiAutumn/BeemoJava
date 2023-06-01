@@ -4,7 +4,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 import me.beemo.commands.colorMenu;
 import me.beemo.commands.games;
 import me.beemo.commands.pronouns;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -28,14 +27,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.awt.*;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
 import java.util.concurrent.ThreadLocalRandom;
 

@@ -3,24 +3,23 @@ package me.beemo.commands;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.json.simple.JSONObject;
 
-import java.util.Objects;
-
 import static me.beemo.DiscordBot.config;
 
 public class personality {
     public static void beemoSetPersonality(SlashCommandInteractionEvent event){
-        String personality = null;
+        String newPersonality = null;
+        JSONObject currentPersonality = (JSONObject) config.get("personality");
+
         if(event.getOption("new") != null) {
-            personality = event.getOption("new").getAsString();
+            newPersonality = event.getOption("new").getAsString();
         }
 
-        if(personality != null) {
-            config.put("personality", personality);
+        if(newPersonality != null) {
+            config.put("personality", newPersonality);
             event.reply("I updated my personality!").setEphemeral(true).queue();
         } else {
-            JSONObject jsonObject = (JSONObject) config.get("personality");
-            if(jsonObject != null) {
-                event.reply("Current personality: " + jsonObject.toJSONString()).setEphemeral(true).queue();
+            if(currentPersonality != null) {
+                event.reply("Current personality: " + currentPersonality.toJSONString()).setEphemeral(true).queue();
             } else {
                 event.reply("No config entry for a personality. Using default personality.").setEphemeral(true).queue();
             }
