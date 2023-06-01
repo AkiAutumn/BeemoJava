@@ -1,7 +1,5 @@
 package me.beemo;
 
-import com.intellijava.core.controller.RemoteLanguageModel;
-import com.intellijava.core.model.input.LanguageModelInput;
 import io.github.cdimascio.dotenv.Dotenv;
 import me.beemo.commands.colorMenu;
 import me.beemo.commands.games;
@@ -13,7 +11,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
