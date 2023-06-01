@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
@@ -32,8 +33,6 @@ import org.json.simple.parser.ParseException;
 
 import java.awt.*;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.time.LocalDateTime;
@@ -236,13 +235,13 @@ public class DiscordBot extends ListenerAdapter {
                 reply = chatGPT(message.getContentDisplay());
                 message.reply(reply).queue();
             } catch (Exception e) {
-                getOnlyFansChannel().sendMessage(e.toString()).queue();
+                message.reply("Im currently unable to reply...").queue();
             }
         }
     }
 
     public static String chatGPT(String text) throws Exception {
-        RemoteLanguageModel model = new RemoteLanguageModel("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", "openai");
+        RemoteLanguageModel model = new RemoteLanguageModel("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", "openai");
 
         LanguageModelInput input = new LanguageModelInput
                 .Builder(text)
