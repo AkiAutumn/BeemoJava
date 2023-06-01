@@ -33,6 +33,8 @@ import org.json.simple.parser.ParseException;
 
 import java.awt.*;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.time.LocalDateTime;
@@ -249,20 +251,60 @@ public class DiscordBot extends ListenerAdapter {
                 message.reply(reply).queue();
             } catch (Exception e) {
                 reportToDeveloper(getStackTrace(e));
-                message.reply("Im currently unable to reply...").queue();
+                message.reply("There was an error generating a smart response - sorry :(").queue();
             }
         }
     }
 
-    public static String chatGPT(String text) throws Exception {
-        Dotenv dotenv = Dotenv.configure().load();
-        RemoteLanguageModel model = new RemoteLanguageModel(dotenv.get("OPENAI"), "openai");
+    public static String chatGPT(String text) {
+        String API_KEY = Dotenv.configure().load().get("OPENAI");
+        String OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+        try {
+            URL url = new URL(OPENAI_API_ENDPOINT);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Authorization", "Bearer " + API_KEY);
+            connection.setDoOutput(true);
 
-        LanguageModelInput input = new LanguageModelInput
-                .Builder(text)
-                .setMaxTokens(250).setModel("text-davinci-003").setTemperature(0.5f).build();
+            // Create the request body as per the API documentation
+            String requestBody = "{\"messages\": [{\"role\": \"system\", \"content\": \"You are a Discord bot. You are inspired by BMO from Adventure Time.\"}, " +
+                    "{\"role\": \"user\", \"content\": \"" + text + "\"}], " +
+                    "\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 500}";
 
-        return model.generateText(input);
+            connection.getOutputStream().write(requestBody.getBytes());
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                // Process the response
+
+                JSONParser parser = new JSONParser();
+                JSONObject json = (JSONObject) parser.parse(response.toString());
+                JSONObject choices = (JSONObject) ((JSONArray) json.get("choices")).get(0);
+                JSONObject message = (JSONObject) choices.get("message");
+                String content = message.get("content").toString();
+
+
+                return content;
+            } else {
+                reportToDeveloper("OpenAI API Request Failed. Response Code: " + responseCode);
+            }
+            connection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
     @Override
