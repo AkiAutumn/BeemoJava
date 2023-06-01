@@ -209,6 +209,7 @@ public class DiscordBot extends ListenerAdapter {
                 } catch (IOException | ParseException e) {
                     reportToDeveloper(getStackTrace(e));
                 }
+                break;
             default:
                 event.reply("I don't recognise this command :(").setEphemeral(true).queue();
         }
@@ -234,14 +235,11 @@ public class DiscordBot extends ListenerAdapter {
         String API_KEY = Dotenv.configure().load().get("OPENAI");
         String OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
         String CONTENT;
-        JSONObject jsonObject = (JSONObject) config.get("personality");
 
-        reportToDeveloper("JSON String: " + jsonObject.toJSONString()); //DON'T FORGET TO REMOVE
-
-        if (jsonObject != null) {
-            CONTENT = jsonObject.toJSONString();
+        if (config.get("personality") != null) {
+            CONTENT = (String) config.get("personality");
         } else {
-            CONTENT = "You are a Discord bot. You are inspired by BMO from Adventure Time.";
+            CONTENT = "You are a Discord bot. You are inspired by BMO from Adventure Time."; //Default personality
             config.put("personality", CONTENT);
             saveConfig();
         }

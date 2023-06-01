@@ -12,7 +12,6 @@ import static me.beemo.DiscordBot.saveConfig;
 public class personality {
     public static void beemoSetPersonality(SlashCommandInteractionEvent event) throws IOException, ParseException {
         String newPersonality = null;
-        JSONObject currentPersonality = (JSONObject) config.get("personality");
 
         if(event.getOption("new") != null) {
             newPersonality = event.getOption("new").getAsString();
@@ -22,12 +21,11 @@ public class personality {
             config.put("personality", newPersonality);
             saveConfig();
             event.reply("I updated my personality!").setEphemeral(true).queue();
-        } else {
-            if(currentPersonality != null) {
-                event.reply("Current personality: " + currentPersonality.toJSONString()).setEphemeral(true).queue();
+        } else if(config.get("personality") != null) {
+                String currentPersonality = (String) config.get("personality");
+                event.reply("Current personality: " + currentPersonality).setEphemeral(true).queue();
             } else {
-                event.reply("No config entry for a personality. Using default personality.").setEphemeral(true).queue();
-            }
+            event.reply("No config entry for a personality. Using default personality.").setEphemeral(true).queue();
         }
     }
 }
