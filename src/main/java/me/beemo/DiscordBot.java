@@ -241,6 +241,7 @@ public class DiscordBot extends ListenerAdapter {
 
     public static String chatGPT(String text) throws Exception {
         Dotenv dotenv = Dotenv.configure().load();
+        System.out.println("OPENAI=" + dotenv.get("OPENAI"));
         RemoteLanguageModel model = new RemoteLanguageModel(dotenv.get("OPENAI"), "openai");
 
         LanguageModelInput input = new LanguageModelInput
