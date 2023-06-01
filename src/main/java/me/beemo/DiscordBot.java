@@ -55,83 +55,94 @@ public class DiscordBot extends ListenerAdapter {
     public static JSONObject config;
 
     public static void main(String[] args){
-        Dotenv dotenv = Dotenv.configure().load();
-        bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
-                .addEventListeners(new DiscordBot())
-                .addEventListeners(new pronouns())
-                .addEventListeners(new colorMenu())
-                .addEventListeners(new games())
-                .build();
-
-        // These commands might take a few minutes to be active after creation/update/delete
-        CommandListUpdateAction commands = bot.updateCommands();
-
-        commands.addCommands(
-                Commands.user("Shutdown")
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.user("Update")
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.user("Beemo Info"),
-                Commands.slash("say", "Makes the bot say what you tell it to")
-                        .addOption(STRING, "content", "What the bot should say", true),
-                Commands.slash("status", "Changes my status")
-                        .addOptions(
-                                new OptionData(OptionType.STRING, "type", "The type of activity", true)
-                                        .addChoice("Watching ...", "watching")
-                                        .addChoice("Playing ...", "playing")
-                                        .addChoice("Listening to ...", "listening")
-                                        .addChoice("Competing in ...", "competing")
-                        )
-                        .addOption(STRING, "content", "What the status should say", true),
-                Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.slash("colors", "Sends an embed for color role assigning")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.slash("games", "Sends an embed for game role assigning")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                Commands.slash("move-all", "Moves all members of a channel")
-                        .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
-                Commands.slash("wake", "Wakes deafened people")
-                        .addOption(USER, "user", "Who to wake up", true)
-                        .addOption(INTEGER, "amount", "How often to move")
-                        .setGuildOnly(true)
-                        .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
-                Commands.slash("poll", "Sends a poll message")
-                        .addOption(STRING, "options", "Choices (separate by comma)")
-                        .setGuildOnly(true)
-        );
-        // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
-        commands.queue();
-
-        System.out.println("Beemo on the line.");
-        System.out.println("OPENAI=" + dotenv.get("OPENAI"));
-
-        //load config
-        JSONParser parser = new JSONParser();
         try {
-            config = (JSONObject) parser.parse(new FileReader("config.json"));
-        } catch (IOException | ParseException e) {
-            getOnlyFansChannel().sendMessage(e.toString()).queue();
-        }
-        //get last activity status and set it again
-        JSONArray lastActivityArray = (JSONArray) config.get("lastActivity");
-        if (lastActivityArray != null) {
+            Dotenv dotenv = Dotenv.configure().load();
+            bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
+                    .addEventListeners(new DiscordBot())
+                    .addEventListeners(new pronouns())
+                    .addEventListeners(new colorMenu())
+                    .addEventListeners(new games())
+                    .build();
+
+            // These commands might take a few minutes to be active after creation/update/delete
+            CommandListUpdateAction commands = bot.updateCommands();
+
+            commands.addCommands(
+                    Commands.user("Shutdown")
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.user("Update")
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.user("Beemo Info"),
+                    Commands.slash("say", "Makes the bot say what you tell it to")
+                            .addOption(STRING, "content", "What the bot should say", true),
+                    Commands.slash("status", "Changes my status")
+                            .addOptions(
+                                    new OptionData(OptionType.STRING, "type", "The type of activity", true)
+                                            .addChoice("Watching ...", "watching")
+                                            .addChoice("Playing ...", "playing")
+                                            .addChoice("Listening to ...", "listening")
+                                            .addChoice("Competing in ...", "competing")
+                            )
+                            .addOption(STRING, "content", "What the status should say", true),
+                    Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("colors", "Sends an embed for color role assigning")
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("games", "Sends an embed for game role assigning")
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("move-all", "Moves all members of a channel")
+                            .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
+                    Commands.slash("wake", "Wakes deafened people")
+                            .addOption(USER, "user", "Who to wake up", true)
+                            .addOption(INTEGER, "amount", "How often to move")
+                            .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
+                    Commands.slash("poll", "Sends a poll message")
+                            .addOption(STRING, "options", "Choices (separate by comma)")
+                            .setGuildOnly(true)
+            );
+            // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
+            commands.queue();
+
+            System.out.println("Beemo on the line.");
+
+            //load config
+            JSONParser parser = new JSONParser();
             try {
-                updateBotStatus(lastActivityArray.get(0).toString(), lastActivityArray.get(1).toString());
-                getAuditLogChannel().sendMessage("Successfully recovered last activity.").queue();
+                config = (JSONObject) parser.parse(new FileReader("config.json"));
             } catch (IOException | ParseException e) {
                 getOnlyFansChannel().sendMessage(e.toString()).queue();
             }
-        } else {
-            getAuditLogChannel().sendMessage("Unable to recover last activity.").queue();
+            //get last activity status and set it again
+            JSONArray lastActivityArray = (JSONArray) config.get("lastActivity");
+            if (lastActivityArray != null) {
+                try {
+                    updateBotStatus(lastActivityArray.get(0).toString(), lastActivityArray.get(1).toString());
+                    //getAuditLogChannel().sendMessage("Successfully recovered last activity.").queue();
+                } catch (IOException | ParseException e) {
+                    getOnlyFansChannel().sendMessage(e.toString()).queue();
+                }
+            } else {
+                //getAuditLogChannel().sendMessage("Unable to recover last activity.").queue();
+            }
+        } catch(Exception e){
+            reportToDeveloper(getStackTrace(e));
         }
     }
 
+    public static void reportToDeveloper(String message){
+        bot.retrieveUserById("309307881205923840").queue(user -> {
+            user.openPrivateChannel().queue((channel) ->
+            {
+                channel.sendMessage("```" + message + "```").queue();
+            });
+        });
+    }
     public static TextChannel getOnlyFansChannel(){
         return bot.getGuildById("425019763950092288").getTextChannelById("748137772501434498");
     }
@@ -164,6 +175,7 @@ public class DiscordBot extends ListenerAdapter {
                     System.exit(0);
                 } catch (IOException e) {
                     event.reply("Update failed: " + e).setEphemeral(true).queue();
+                    reportToDeveloper(getStackTrace(e));
                     throw new RuntimeException(e);
                 }
                 break;
@@ -198,6 +210,7 @@ public class DiscordBot extends ListenerAdapter {
                     updateBotStatus(event.getOption("type").getAsString(), event.getOption("content").getAsString());
                     event.reply("Got it :3").setEphemeral(true).queue();
                 } catch (IOException | ParseException e) {
+                    reportToDeveloper(getStackTrace(e));
                     throw new RuntimeException(e);
                 }
                 break;
@@ -235,6 +248,7 @@ public class DiscordBot extends ListenerAdapter {
                 reply = chatGPT(message.getContentDisplay());
                 message.reply(reply).queue();
             } catch (Exception e) {
+                reportToDeveloper(getStackTrace(e));
                 message.reply("Im currently unable to reply...").queue();
             }
         }
@@ -303,5 +317,12 @@ public class DiscordBot extends ListenerAdapter {
         }
         value *= Long.signum(bytes);
         return String.format("%.1f %ciB", value / 1024.0, ci.current());
+    }
+
+    public static String getStackTrace(final Throwable throwable) {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter pw = new PrintWriter(sw, true);
+        throwable.printStackTrace(pw);
+        return sw.getBuffer().toString();
     }
 }
