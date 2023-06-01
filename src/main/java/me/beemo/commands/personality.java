@@ -10,8 +10,8 @@ import static me.beemo.DiscordBot.config;
 public class personality {
     public static void beemoSetPersonality(SlashCommandInteractionEvent event){
         String personality = null;
-        if(event.getOption("personality") != null) {
-            personality = event.getOption("personality").getAsString();
+        if(event.getOption("new") != null) {
+            personality = event.getOption("new").getAsString();
         }
 
         if(personality != null) {

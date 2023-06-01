@@ -78,7 +78,7 @@ public class DiscordBot extends ListenerAdapter {
                     Commands.slash("info", "Get system info of Beemo's machine"),
                     Commands.slash("personality", "Change my personality")
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
-                            .addOption(STRING, "personality", "Describe my new personality in a few sentences!"),
+                            .addOption(STRING, "new", "Describe my new personality in a few sentences!"),
                     Commands.slash("say", "Makes the bot say what you tell it to")
                             .addOption(STRING, "content", "What the bot should say", true),
                     Commands.slash("status", "Changes my status")
