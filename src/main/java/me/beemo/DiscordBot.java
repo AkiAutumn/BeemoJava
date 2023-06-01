@@ -122,19 +122,16 @@ public class DiscordBot extends ListenerAdapter {
             try {
                 config = (JSONObject) parser.parse(new FileReader("config.json"));
             } catch (IOException | ParseException e) {
-                getOnlyFansChannel().sendMessage(e.toString()).queue();
+                reportToDeveloper(getStackTrace(e));
             }
             //get last activity status and set it again
             JSONArray lastActivityArray = (JSONArray) config.get("lastActivity");
             if (lastActivityArray != null) {
                 try {
                     updateBotStatus(lastActivityArray.get(0).toString(), lastActivityArray.get(1).toString());
-                    //getAuditLogChannel().sendMessage("Successfully recovered last activity.").queue();
                 } catch (IOException | ParseException e) {
-                    getOnlyFansChannel().sendMessage(e.toString()).queue();
+                    reportToDeveloper(getStackTrace(e));
                 }
-            } else {
-                //getAuditLogChannel().sendMessage("Unable to recover last activity.").queue();
             }
         } catch(Exception e){
             reportToDeveloper(getStackTrace(e));
@@ -211,7 +208,7 @@ public class DiscordBot extends ListenerAdapter {
                 beemoInfo(event);
                 break;
             case "personality":
-                beemoSetPersonality(event, event.getOption("personality").getAsString());
+                beemoSetPersonality(event);
             default:
                 event.reply("I don't recognise this command :(").setEphemeral(true).queue();
         }

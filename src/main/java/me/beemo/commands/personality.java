@@ -3,10 +3,17 @@ package me.beemo.commands;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.json.simple.JSONObject;
 
+import java.util.Objects;
+
 import static me.beemo.DiscordBot.config;
 
 public class personality {
-    public static void beemoSetPersonality(SlashCommandInteractionEvent event, String personality){
+    public static void beemoSetPersonality(SlashCommandInteractionEvent event){
+        String personality = null;
+        if(event.getOption("personality") != null) {
+            personality = event.getOption("personality").getAsString();
+        }
+
         if(personality != null) {
             config.put("personality", personality);
             event.reply("I updated my personality!").setEphemeral(true).queue();
