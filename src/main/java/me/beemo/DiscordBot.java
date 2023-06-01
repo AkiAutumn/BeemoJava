@@ -70,11 +70,11 @@ public class DiscordBot extends ListenerAdapter {
             CommandListUpdateAction commands = bot.updateCommands();
 
             commands.addCommands(
-                    Commands.slash("Shutdown", "Kill Beemo")
+                    Commands.slash("shutdown", "Kill Beemo")
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                    Commands.slash("Update", "Update Beemo")
+                    Commands.slash("update", "Update Beemo")
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                    Commands.slash("Beemo Info", "Get system info of Beemo's machine"),
+                    Commands.slash("info", "Get system info of Beemo's machine"),
                     Commands.slash("say", "Makes the bot say what you tell it to")
                             .addOption(STRING, "content", "What the bot should say", true),
                     Commands.slash("status", "Changes my status")
