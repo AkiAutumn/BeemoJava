@@ -204,7 +204,11 @@ public class DiscordBot extends ListenerAdapter {
                 beemoInfo(event);
                 break;
             case "personality":
-                beemoSetPersonality(event);
+                try {
+                    beemoSetPersonality(event);
+                } catch (IOException | ParseException e) {
+                    reportToDeveloper(getStackTrace(e));
+                }
             default:
                 event.reply("I don't recognise this command :(").setEphemeral(true).queue();
         }
@@ -216,23 +220,30 @@ public class DiscordBot extends ListenerAdapter {
         if (message.getMentions().getUsers().contains(bot.getSelfUser())) {
             String reply = null;
             message.getChannel().sendTyping().queue();
-            reply = chatGPT(message.getContentDisplay());
-            assert reply != null;
-            message.reply(reply).queue();
+            try {
+                reply = chatGPT(message.getContentDisplay());
+                assert reply != null;
+                message.reply(reply).queue();
+            } catch (IOException | ParseException e) {
+                reportToDeveloper(getStackTrace(e));
+            }
         }
     }
 
-    public static String chatGPT(String text) {
+    public static String chatGPT(String text) throws IOException, ParseException {
         String API_KEY = Dotenv.configure().load().get("OPENAI");
         String OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
         String CONTENT;
         JSONObject jsonObject = (JSONObject) config.get("personality");
+
+        reportToDeveloper("JSON String: " + jsonObject.toJSONString()); //DON'T FORGET TO REMOVE
+
         if (jsonObject != null) {
             CONTENT = jsonObject.toJSONString();
-            reportToDeveloper(CONTENT);
         } else {
             CONTENT = "You are a Discord bot. You are inspired by BMO from Adventure Time.";
             config.put("personality", CONTENT);
+            saveConfig();
         }
 
         try {
