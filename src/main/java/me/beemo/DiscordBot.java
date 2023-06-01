@@ -216,14 +216,10 @@ public class DiscordBot extends ListenerAdapter {
 
         if (message.getMentions().getUsers().contains(bot.getSelfUser())) {
             String reply = null;
-            try {
-                message.getChannel().sendTyping().queue();
-                reply = chatGPT(message.getContentDisplay());
-                message.reply(reply).queue();
-            } catch (Exception e) {
-                reportToDeveloper(getStackTrace(e));
-                message.reply("There was an error generating a smart response - sorry :(").queue();
-            }
+            message.getChannel().sendTyping().queue();
+            reply = chatGPT(message.getContentDisplay());
+            assert reply != null;
+            message.reply(reply).queue();
         }
     }
 
@@ -267,9 +263,9 @@ public class DiscordBot extends ListenerAdapter {
 
                 return message.get("content").toString();
             } else {
-                reportToDeveloper("OpenAI API Request Failed. Response Code: " + responseCode);
+                connection.disconnect();
+                return "OpenAI API Request Failed. Response Code: " + responseCode;
             }
-            connection.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ParseException e) {
