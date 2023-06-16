@@ -1,15 +1,14 @@
 package me.beemo;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import me.beemo.commands.colorMenu;
-import me.beemo.commands.games;
-import me.beemo.commands.pronouns;
+import me.beemo.commands.joinToCreate;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
@@ -33,7 +32,6 @@ import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.EnumSet;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
@@ -59,9 +57,7 @@ public class DiscordBot extends ListenerAdapter {
             Dotenv dotenv = Dotenv.configure().load();
             bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
                     .addEventListeners(new DiscordBot())
-                    .addEventListeners(new pronouns())
-                    .addEventListeners(new colorMenu())
-                    .addEventListeners(new games())
+                    .addEventListeners(new joinToCreate())
                     .build();
 
             // These commands might take a few minutes to be active after creation/update/delete
@@ -87,15 +83,6 @@ public class DiscordBot extends ListenerAdapter {
                                             .addChoice("Competing in ...", "competing")
                             )
                             .addOption(STRING, "content", "What the status should say", true),
-                    Commands.slash("pronouns", "Sends an embed for pronoun role assigning")
-                            .setGuildOnly(true)
-                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                    Commands.slash("colors", "Sends an embed for color role assigning")
-                            .setGuildOnly(true)
-                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                    Commands.slash("games", "Sends an embed for game role assigning")
-                            .setGuildOnly(true)
-                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                     Commands.slash("move-all", "Moves all members of a channel")
                             .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
                             .setGuildOnly(true)
@@ -109,7 +96,7 @@ public class DiscordBot extends ListenerAdapter {
                             .addOption(STRING, "options", "Choices (separate by comma)")
                             .setGuildOnly(true),
                     Commands.slash("create", "Create various things")
-                            .addOption(STRING, "join-to-create", "A voice-channel where members get transferred into a fresh, new voice channel")
+                            .addOption(CHANNEL, "join-to-create", "Select the voice channel you want to use for join-to-create")
                             .setGuildOnly(true)
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
             );
@@ -122,16 +109,24 @@ public class DiscordBot extends ListenerAdapter {
             JSONParser parser = new JSONParser();
             try {
                 config = (JSONObject) parser.parse(new FileReader("config.json"));
+                if(config.get("self") == null){
+                    config.put("self", new JSONObject());
+                    saveConfig();
+                }
             } catch (IOException | ParseException e) {
                 reportToDeveloper(getStackTrace(e));
             }
             //get last activity status and set it again
-            JSONArray lastActivityArray = (JSONArray) config.get("lastActivity");
-            if (lastActivityArray != null) {
-                try {
-                    updateBotStatus(lastActivityArray.get(0).toString(), lastActivityArray.get(1).toString());
-                } catch (IOException | ParseException e) {
-                    reportToDeveloper(getStackTrace(e));
+
+            JSONObject self = (JSONObject) config.get("self");
+            if(self != null) {
+                JSONArray lastActivityArray = (JSONArray) self.get("lastActivity");
+                if (lastActivityArray != null) {
+                    try {
+                        updateBotStatus(lastActivityArray.get(0).toString(), lastActivityArray.get(1).toString());
+                    } catch (IOException | ParseException e) {
+                        reportToDeveloper(getStackTrace(e));
+                    }
                 }
             }
         } catch(Exception e){
@@ -217,11 +212,26 @@ public class DiscordBot extends ListenerAdapter {
                 break;
             case "create":
                 if(event.getOption("join-to-create") != null){
-                    joinToCreate(event);
+                    try {
+                        joinToCreate(event);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
                 break;
             default:
                 event.reply("I don't recognise this command :(").setEphemeral(true).queue();
+        }
+    }
+
+    public void onGuildJoin(GuildJoinEvent event) {
+        config.put(event.getGuild().getId(), null);
+        try {
+            saveConfig();
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 

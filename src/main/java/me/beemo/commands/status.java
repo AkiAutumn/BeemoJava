@@ -3,6 +3,7 @@ package me.beemo.commands;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -36,7 +37,9 @@ public class status {
         array.add(type);
         array.add(content);
 
-        config.put("lastActivity", array);
+        JSONObject self = (JSONObject) config.get("self");
+        self.put("lastActivity", array);
+        config.put("self", self);
         saveConfig();
     }
 }

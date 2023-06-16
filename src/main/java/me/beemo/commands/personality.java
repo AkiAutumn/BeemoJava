@@ -17,12 +17,15 @@ public class personality {
             newPersonality = event.getOption("new").getAsString();
         }
 
+        JSONObject self = (JSONObject) config.get("self");
+
         if(newPersonality != null) {
-            config.put("personality", newPersonality);
+            self.put("personality", newPersonality);
+            config.put("self", self);
             saveConfig();
             event.reply("I updated my personality!").setEphemeral(true).queue();
-        } else if(config.get("personality") != null) {
-                String currentPersonality = (String) config.get("personality");
+        } else if(self.get("personality") != null) {
+                String currentPersonality = (String) self.get("personality");
                 event.reply("Current personality: " + currentPersonality).setEphemeral(true).queue();
             } else {
             event.reply("No config entry for a personality. Using default personality.").setEphemeral(true).queue();
