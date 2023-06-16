@@ -38,6 +38,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.info.beemoInfo;
+import static me.beemo.commands.joinToCreate.joinToCreate;
 import static me.beemo.commands.massmove.moveAll;
 import static me.beemo.commands.personality.beemoSetPersonality;
 import static me.beemo.commands.pronouns.pronounsRoleCommand;
@@ -106,7 +107,11 @@ public class DiscordBot extends ListenerAdapter {
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
                     Commands.slash("poll", "Sends a poll message")
                             .addOption(STRING, "options", "Choices (separate by comma)")
+                            .setGuildOnly(true),
+                    Commands.slash("create", "Create various things")
+                            .addOption(STRING, "join-to-create", "A voice-channel where members get transferred into a fresh, new voice channel")
                             .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
             );
             // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
             commands.queue();
@@ -210,6 +215,11 @@ public class DiscordBot extends ListenerAdapter {
                     reportToDeveloper(getStackTrace(e));
                 }
                 break;
+            case "create":
+                if(event.getOption("join-to-create") != null){
+                    joinToCreate(event);
+                }
+                break;
             default:
                 event.reply("I don't recognise this command :(").setEphemeral(true).queue();
         }
@@ -294,31 +304,6 @@ public class DiscordBot extends ListenerAdapter {
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         event.deferEdit().queue();
-    }
-
-    public static String beemoIdleReply() {
-
-        int randomNumber = ThreadLocalRandom.current().nextInt(0, 13 + 1);
-
-        String[] replies = {
-                "Beep",
-                "Boop",
-                "Boob",
-                "Hi",
-                "Whassaaap",
-                "Huh?",
-                "*triggered*",
-                "Error",
-                "java.lang.NullPointerException",
-                "?",
-                "!?",
-                "Baumkuchen",
-                "Für Fortnite!",
-                "Daddy?",
-                "Mommy?"
-        };
-
-        return replies[randomNumber];
     }
 
     public static void saveConfig() throws IOException, ParseException {

@@ -14,7 +14,7 @@ public class info {
     public static void beemoInfo(SlashCommandInteractionEvent event){
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Bot Info");
-        embed.addField("Rest Ping", bot.getGatewayPing() + " ms", false);
+        embed.addField("Rest API Ping", bot.getGatewayPing() + " ms", false);
         embed.addField("Memory", humanReadableByteCountBin((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())) + " / " + humanReadableByteCountBin(Runtime.getRuntime().maxMemory()), false);
         embed.addField("Operating System", System.getProperty("os.name"), false);
         embed.addField("Java Version", System.getProperty("java.version"), true);
