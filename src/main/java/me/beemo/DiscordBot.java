@@ -146,9 +146,6 @@ public class DiscordBot extends ListenerAdapter {
             });
         });
     }
-    public static TextChannel getOnlyFansChannel(){
-        return bot.getGuildById("425019763950092288").getTextChannelById("748137772501434498");
-    }
 
     public static TextChannel getAuditLogChannel(){
         return bot.getGuildById("425019763950092288").getTextChannelById("845732635350794270");
@@ -240,7 +237,7 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     public void onGuildJoin(GuildJoinEvent event) {
-        config.put(event.getGuild().getId(), null);
+        config.put(event.getGuild().getId(), new JSONObject());
         try {
             saveConfig();
         } catch (IOException | ParseException e) {

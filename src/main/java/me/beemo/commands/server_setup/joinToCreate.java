@@ -45,40 +45,6 @@ public class joinToCreate extends ListenerAdapter {
         }
     }
 
-    /*
-    @Override
-    public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {
-        JSONObject guildConfig = (JSONObject) config.get(event.getGuild().getId());
-        if(joinedChannel.getId().equals(String.valueOf(guildConfig.get("joinToCreateChannelID")))){
-            Member member = event.getMember();
-            Guild guild = event.getGuild();
-            Category category = guild.getCategoryById((String) guildConfig.get("joinToCreateCategoryID"));
-
-            category.createVoiceChannel(member.getNickname() + "'s Channel").addPermissionOverride(member, Permission.MANAGE_CHANNEL.getRawValue(), Permission.UNKNOWN.getRawValue()).queue();
-            try {
-                Thread.sleep(200);
-                VoiceChannel voiceChannel = guild.getVoiceChannelsByName(member.getNickname() + "'s Channel", false).get(0);
-                guild.moveVoiceMember(member, voiceChannel).queue();
-
-                JSONArray tempChannels;
-                if(guildConfig.get("temporaryVoiceChannels") == null){
-                    tempChannels = new JSONArray();
-                } else {
-                    tempChannels = (JSONArray) guildConfig.get("temporaryVoiceChannels");
-                }
-
-                tempChannels.add(voiceChannel.getId());
-                guildConfig.put("temporaryVoiceChannels", tempChannels);
-                config.put(guild.getId(), guildConfig);
-
-                saveConfig();
-            } catch (IOException | ParseException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-     */
-
     @Override
     public void onGuildVoiceMove(GuildVoiceMoveEvent event) {
         Guild guild = event.getGuild();
