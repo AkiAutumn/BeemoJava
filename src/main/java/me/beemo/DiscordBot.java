@@ -1,7 +1,8 @@
 package me.beemo;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import me.beemo.commands.joinToCreate;
+import me.beemo.commands.server_setup.joinToCreate;
+import me.beemo.commands.server_setup.onJoinRole;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -36,7 +37,8 @@ import java.util.EnumSet;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.info.beemoInfo;
-import static me.beemo.commands.joinToCreate.joinToCreate;
+import static me.beemo.commands.server_setup.joinToCreate.joinToCreate;
+import static me.beemo.commands.server_setup.onJoinRole.onJoinRole;
 import static me.beemo.commands.massmove.moveAll;
 import static me.beemo.commands.personality.beemoSetPersonality;
 import static me.beemo.commands.pronouns.pronounsRoleCommand;
@@ -58,6 +60,7 @@ public class DiscordBot extends ListenerAdapter {
             bot = JDABuilder.createDefault(dotenv.get("TOKEN"), EnumSet.allOf(GatewayIntent.class))
                     .addEventListeners(new DiscordBot())
                     .addEventListeners(new joinToCreate())
+                    .addEventListeners(new onJoinRole())
                     .build();
 
             // These commands might take a few minutes to be active after creation/update/delete
@@ -95,8 +98,9 @@ public class DiscordBot extends ListenerAdapter {
                     Commands.slash("poll", "Sends a poll message")
                             .addOption(STRING, "options", "Choices (separate by comma)")
                             .setGuildOnly(true),
-                    Commands.slash("create", "Create various things")
+                    Commands.slash("server-setup", "Create various things")
                             .addOption(CHANNEL, "join-to-create", "Select the voice channel you want to use for join-to-create")
+                            .addOption(ROLE, "on-join-role", "Select a role that every new member gets assigned automatically, when they join the server")
                             .setGuildOnly(true)
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
             );
@@ -210,10 +214,19 @@ public class DiscordBot extends ListenerAdapter {
                     reportToDeveloper(getStackTrace(e));
                 }
                 break;
-            case "create":
+            case "server-setup":
                 if(event.getOption("join-to-create") != null){
                     try {
                         joinToCreate(event);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                if(event.getOption("on-join-role") != null){
+                    try {
+                        onJoinRole(event);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     } catch (ParseException e) {
