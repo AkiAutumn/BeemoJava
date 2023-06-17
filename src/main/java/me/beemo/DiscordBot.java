@@ -32,6 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 import static me.beemo.commands.colorMenu.colorRoleCommand;
@@ -54,6 +55,8 @@ public class DiscordBot extends ListenerAdapter {
     public static JDA bot;
     public static JSONObject config;
 
+    public static ArrayList<String> botAdminList = new ArrayList<>();
+
     public static void main(String[] args){
         try {
             Dotenv dotenv = Dotenv.configure().load();
@@ -63,14 +66,15 @@ public class DiscordBot extends ListenerAdapter {
                     .addEventListeners(new onJoinRole())
                     .build();
 
+            botAdminList.add("309307881205923840"); //Aki
+            botAdminList.add("197424794063470592"); //Kumo
+
             // These commands might take a few minutes to be active after creation/update/delete
             CommandListUpdateAction commands = bot.updateCommands();
 
             commands.addCommands(
-                    Commands.slash("shutdown", "Kill Beemo")
-                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
-                    Commands.slash("update", "Update Beemo")
-                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("shutdown", "Kill Beemo"),
+                    Commands.slash("update", "Update Beemo"),
                     Commands.slash("info", "Get system info of Beemo's machine"),
                     Commands.slash("personality", "Change my personality")
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
