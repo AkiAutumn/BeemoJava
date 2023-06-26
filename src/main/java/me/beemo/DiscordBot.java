@@ -138,7 +138,7 @@ public class DiscordBot extends ListenerAdapter {
                 }
             }
         } catch(Exception e){
-            reportToDeveloper(getStackTrace(e));
+            System.out.println(e);
         }
     }
 
