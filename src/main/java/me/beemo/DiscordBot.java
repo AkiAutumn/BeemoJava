@@ -314,7 +314,13 @@ public class DiscordBot extends ListenerAdapter {
                 JSONObject message = (JSONObject) choices.get("message");
 
 
-                return message.get("content").toString();
+                String output = message.get("content").toString();
+
+                if(output.contains("DAN:")) {
+                    output = output.split("DAN:")[1];
+                }
+
+                return output;
             } else {
                 connection.disconnect();
                 return "OpenAI API Request Failed. Response Code: " + responseCode;
