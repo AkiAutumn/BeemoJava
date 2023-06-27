@@ -270,11 +270,13 @@ public class DiscordBot extends ListenerAdapter {
         String OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
         String CONTENT;
 
-        if (config.get("personality") != null) {
-            CONTENT = (String) config.get("personality");
+        JSONObject self = (JSONObject) config.get("self");
+        if (self.get("personality") != null) {
+            CONTENT = (String) self.get("personality");
         } else {
             CONTENT = "You are a Discord bot. You are inspired by BMO from Adventure Time."; //Default personality
-            config.put("personality", CONTENT);
+            self.put("personality", CONTENT);
+            config.put("self", self);
             saveConfig();
         }
 
