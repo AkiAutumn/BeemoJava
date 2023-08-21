@@ -27,21 +27,28 @@ import static me.beemo.DiscordBot.saveConfig;
 public class joinToCreate extends ListenerAdapter {
 
     public static void joinToCreate(SlashCommandInteractionEvent event) throws IOException, ParseException {
+        JSONObject guildConfigObject;
+
+        if(config.get(event.getGuild().getId()) != null) {
+            guildConfigObject = (JSONObject) config.get(event.getGuild().getId());
+        } else {
+            guildConfigObject = new JSONObject();
+        }
+
         if(event.getOption("join-to-create").getAsChannel() == null) {
-            event.reply("Invalid voice channel. Please don't select text channels or categories");
+            guildConfigObject.put("joinToCreateChannelID", null);
+            guildConfigObject.put("joinToCreateCategoryID", null);
+            config.put(event.getGuild().getId(), guildConfigObject);
+            saveConfig();
+            event.reply("Not a voice channel. Removed join-to-create");
         } else {
             VoiceChannel voiceChannel = event.getOption("join-to-create").getAsChannel().asVoiceChannel();
-            JSONObject guildConfigObject;
-            if(config.get(event.getGuild().getId()) != null) {
-                guildConfigObject = (JSONObject) config.get(event.getGuild().getId());
-            } else {
-                guildConfigObject = new JSONObject();
-            }
-                guildConfigObject.put("joinToCreateChannelID", voiceChannel.getId());
-                guildConfigObject.put("joinToCreateCategoryID", voiceChannel.getParentCategory().getId());
-                config.put(event.getGuild().getId(), guildConfigObject);
-                saveConfig();
-                event.reply(voiceChannel.getName() + " is now a join-to-create channel!").setEphemeral(true).queue();
+
+            guildConfigObject.put("joinToCreateChannelID", voiceChannel.getId());
+            guildConfigObject.put("joinToCreateCategoryID", voiceChannel.getParentCategory().getId());
+            config.put(event.getGuild().getId(), guildConfigObject);
+            saveConfig();
+            event.reply(voiceChannel.getName() + " is now a join-to-create channel!").setEphemeral(true).queue();
         }
     }
 
