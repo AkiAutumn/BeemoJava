@@ -35,6 +35,7 @@ import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import static me.beemo.commands.clear.clear;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.info.beemoInfo;
@@ -106,6 +107,10 @@ public class DiscordBot extends ListenerAdapter {
                             .addOption(CHANNEL, "join-to-create", "Select the voice channel you want to use for join-to-create")
                             .addOption(ROLE, "on-join-role", "Select a role that every new member gets assigned automatically, when they join the server")
                             .setGuildOnly(true)
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("clear", "Delete previous messages")
+                            .addOption(INTEGER, "amount", "How many messages to clear?")
+                            .setGuildOnly(true)
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
             );
             // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
@@ -170,6 +175,9 @@ public class DiscordBot extends ListenerAdapter {
         switch (event.getName()) {
             case "say":
                 say(event, event.getOption("content").getAsString()); // content is required so no null-check here
+                break;
+            case "clear":
+                clear(event, event.getOption("amount").getAsInt()); // content is required so no null-check here
                 break;
             case "status":
                 try {
