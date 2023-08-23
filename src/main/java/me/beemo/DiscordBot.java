@@ -109,7 +109,7 @@ public class DiscordBot extends ListenerAdapter {
                             .setGuildOnly(true)
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
                     Commands.slash("clear", "Delete previous messages")
-                            .addOption(INTEGER, "amount", "How many messages to clear?")
+                            .addOption(INTEGER, "amount", "How many messages to clear?", true)
                             .setGuildOnly(true)
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
             );
