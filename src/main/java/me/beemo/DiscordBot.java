@@ -69,6 +69,7 @@ public class DiscordBot extends ListenerAdapter {
                     .build();
 
             botAdminList.add("309307881205923840"); //Aki
+            botAdminList.add("700435712562168018"); //Sahne (Aki alt. account)
             botAdminList.add("197424794063470592"); //Kumo
 
             // These commands might take a few minutes to be active after creation/update/delete
@@ -209,14 +210,10 @@ public class DiscordBot extends ListenerAdapter {
                 }
                 break;
             case "shutdown":
-                if(botAdminList.contains(event.getUser().getId())) {
-                    beemoShutdown(event);
-                }
+                beemoShutdown(event);
                 break;
             case "update":
-                if(botAdminList.contains(event.getUser().getId())) {
-                    beemoUpdate(event);
-                }
+                beemoUpdate(event);
                 break;
             case "info":
                 beemoInfo(event);
