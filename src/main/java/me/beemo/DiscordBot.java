@@ -40,6 +40,7 @@ import static me.beemo.commands.clear.clear;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.info.beemoInfo;
+import static me.beemo.commands.poll.makePoll;
 import static me.beemo.commands.server_setup.joinToCreate.joinToCreate;
 import static me.beemo.commands.server_setup.onJoinRole.onJoinRole;
 import static me.beemo.commands.massmove.moveAll;
@@ -103,7 +104,9 @@ public class DiscordBot extends ListenerAdapter {
                             .setGuildOnly(true)
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
                     Commands.slash("poll", "Sends a poll message")
+                            .addOption(STRING, "title", "The question or topic the poll is about")
                             .addOption(STRING, "options", "Choices (separate by comma)")
+                            .addOption(BOOLEAN, "multiple-choice", "Are multiple choices allowed?")
                             .setGuildOnly(true),
                     Commands.slash("server-setup", "Create various things")
                             .addOption(CHANNEL, "join-to-create", "Select the voice channel you want to use for join-to-create")
@@ -180,6 +183,9 @@ public class DiscordBot extends ListenerAdapter {
                 break;
             case "clear":
                 clear(event, event.getOption("amount").getAsInt()); // content is required so no null-check here
+                break;
+            case "poll":
+                makePoll(event, event.getOption("title").getAsString(), event.getOption("options").getAsString(), event.getOption("multiple-choice").getAsBoolean()); // content is required so no null-check here
                 break;
             case "status":
                 try {
@@ -333,7 +339,7 @@ public class DiscordBot extends ListenerAdapter {
                 return output;
             } else {
                 connection.disconnect();
-                return "OpenAI API Request Failed. Response Code: " + responseCode;
+                return "```OpenAI API Request Failed. Response Code: " + responseCode + "```";
             }
         } catch (IOException e) {
             e.printStackTrace();

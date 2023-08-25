@@ -1,9 +1,15 @@
 package me.beemo.commands;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.UserSnowflake;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
@@ -13,53 +19,48 @@ import java.util.*;
 
 public class poll extends ListenerAdapter {
 
-    static ArrayList<SelectMenu> activePollMenus;
+    //TODO: create a poll object or idk
 
-    public static void makePoll (SlashCommandInteractionEvent event) {
-        String title = String.valueOf(event.getOption("title"));
-        String options = String.valueOf(event.getOption("options"));
-        int minChoices = event.getOption("minChoices").getAsInt();
-        int maxChoices = event.getOption("maxChoices").getAsInt();
-        long durationInMinutes = event.getOption("duration").getAsLong();
+    static HashMap<String, ArrayList<String>> activePolls = new HashMap<>();
+
+    public static void makePoll (SlashCommandInteractionEvent event, String title, String options, boolean multipleChoice) {
 
         String[] choices = options.split(",");
-        Collection<SelectOption> menuOptions = new HashSet<>();
+        boolean sameNameMenuExists = false;
 
-        for (String choice : choices) {
-            menuOptions.add(SelectOption.of(choice, choice));
+        for (String key : activePolls.keySet()) {
+            if (Objects.equals(key, title)) {
+                sameNameMenuExists = true;
+                break;
+            }
         }
 
-        SelectMenu menu = SelectMenu.create(title)
-                .setPlaceholder(title)
-                .setRequiredRange(minChoices, maxChoices)
-                .addOptions(menuOptions)
-                .build();
+        if(!sameNameMenuExists) {
+            Collection<Button> buttons = new ArrayList<>();
+            ArrayList<String> choiceIds = new ArrayList<>();
 
-        MessageCreateAction message = event.getChannel().sendMessage("").addActionRow(menu);
-        message.queue();
-
-        activePollMenus.add(menu);
-
-        LocalDateTime startTime = LocalDateTime.now();
-
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                LocalDateTime now = LocalDateTime.now();
-                if(startTime.plusMinutes(durationInMinutes).isBefore(now)){ //poll time is up
-                    activePollMenus.remove(menu);
-                }
+            for (String choice : choices) {
+                buttons.add(Button.secondary(title + ".separator." + choice, choice));
+                choiceIds.add(title + ".separator." + choice);
             }
-        });
-        t.start();
+
+            MessageCreateAction messageCreateAction = event.getChannel().sendMessage(title).addActionRow(buttons);
+            messageCreateAction.queue();
+            event.reply("✓").setEphemeral(true).queue();
+
+            activePolls.put(title, choiceIds);
+        } else {
+            event.reply("A poll with a similar title already exists. End it before you create another one with that name.").setEphemeral(true).queue();
+        }
     }
 
+    public static void endPoll (SlashCommandInteractionEvent event, String title) {
+    }
+
+
     @Override
-    public void onSelectMenuInteraction(SelectMenuInteractionEvent event) {
+    public void onButtonInteraction(ButtonInteractionEvent event)
+    {
 
-
-
-        if (event.getComponentId().equals("color-menu")) {
-            String type = event.getValues().get(0);
-        }
     }
 }
