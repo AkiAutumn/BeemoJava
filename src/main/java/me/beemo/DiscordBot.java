@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -208,10 +209,14 @@ public class DiscordBot extends ListenerAdapter {
                 }
                 break;
             case "shutdown":
-                beemoShutdown(event);
+                if(botAdminList.contains(event.getUser().getId())) {
+                    beemoShutdown(event);
+                }
                 break;
             case "update":
-                beemoUpdate(event);
+                if(botAdminList.contains(event.getUser().getId())) {
+                    beemoUpdate(event);
+                }
                 break;
             case "info":
                 beemoInfo(event);
