@@ -21,8 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.beemo.DiscordBot.config;
-import static me.beemo.DiscordBot.saveConfig;
+import static me.beemo.DiscordBot.*;
 
 public class joinToCreate extends ListenerAdapter {
 
@@ -99,9 +98,8 @@ public class joinToCreate extends ListenerAdapter {
             if (tempChannels.contains(leftChannel.getId())) {
                 List<Member> memberList = leftChannel.getMembers();
                 if (memberList.isEmpty()) {
-                    if (joinedChannel.getId().equals(String.valueOf(guildConfig.get("joinToCreateChannelID")))) {
+                    if (leftChannel.getId().equals(String.valueOf(guildConfig.get("joinToCreateChannelID")))) {
                         guild.moveVoiceMember(member, leftChannel).queue();
-                        //TODO: this if statement is never triggered, even tho it should...
                     } else {
                         leftChannel.delete().queue();
                         tempChannels.remove(leftChannel.getId());
@@ -116,21 +114,22 @@ public class joinToCreate extends ListenerAdapter {
         if(joinedChannel != null) {
             if (joinedChannel.getId().equals(String.valueOf(guildConfig.get("joinToCreateChannelID")))) {
                 Category category = guild.getCategoryById((String) guildConfig.get("joinToCreateCategoryID"));
+                String channelName = member.getEffectiveName() + "'s Channel";
                 boolean channelAlreadyExists = false;
 
                 for(VoiceChannel voiceChannel : category.getVoiceChannels()){
-                    if(voiceChannel.getName().equals(member.getNickname() + "'s Channel")) {
+                    if(voiceChannel.getName().equals(channelName)) {
                         channelAlreadyExists = true;
                     }
                 }
 
                 if(!channelAlreadyExists) {
-                    category.createVoiceChannel(member.getNickname() + "'s Channel").addPermissionOverride(member, Permission.MANAGE_CHANNEL.getRawValue(), Permission.UNKNOWN.getRawValue()).queue();
+                    category.createVoiceChannel(channelName).addPermissionOverride(member, Permission.MANAGE_CHANNEL.getRawValue(), Permission.UNKNOWN.getRawValue()).queue();
                 }
 
                 try {
                     Thread.sleep(1000);
-                    VoiceChannel voiceChannel = guild.getVoiceChannelsByName(member.getNickname() + "'s Channel", false).get(0);
+                    VoiceChannel voiceChannel = guild.getVoiceChannelsByName(channelName, false).get(0);
                     guild.moveVoiceMember(member, voiceChannel).queue();
 
                     tempChannels.add(voiceChannel.getId());
