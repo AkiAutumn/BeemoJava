@@ -9,8 +9,5 @@
         <module name="BeemoJava" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="BeemoJava" target="10" />
-    </bytecodeTargetLevel>
   </component>
 </project>

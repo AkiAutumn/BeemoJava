@@ -1,6 +1,7 @@
 package me.beemo;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import me.beemo.commands.pollCommand.pollManager;
 import me.beemo.commands.server_setup.joinToCreate;
 import me.beemo.commands.server_setup.onJoinRole;
 import net.dv8tion.jda.api.JDA;
@@ -16,7 +17,6 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -40,7 +40,8 @@ import static me.beemo.commands.clear.clear;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.info.beemoInfo;
-import static me.beemo.commands.poll.makePoll;
+import static me.beemo.commands.pollCommand.pollManager.endPoll;
+import static me.beemo.commands.pollCommand.pollManager.makePoll;
 import static me.beemo.commands.server_setup.joinToCreate.joinToCreate;
 import static me.beemo.commands.server_setup.onJoinRole.onJoinRole;
 import static me.beemo.commands.massmove.moveAll;
@@ -67,6 +68,7 @@ public class DiscordBot extends ListenerAdapter {
                     .addEventListeners(new DiscordBot())
                     .addEventListeners(new joinToCreate())
                     .addEventListeners(new onJoinRole())
+                    .addEventListeners(new pollManager())
                     .build();
 
             botAdminList.add("309307881205923840"); //Aki
@@ -103,10 +105,13 @@ public class DiscordBot extends ListenerAdapter {
                             .addOption(INTEGER, "amount", "How often to move")
                             .setGuildOnly(true)
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
-                    Commands.slash("poll", "Sends a poll message")
-                            .addOption(STRING, "title", "The question or topic the poll is about")
-                            .addOption(STRING, "options", "Choices (separate by comma)")
-                            .addOption(BOOLEAN, "multiple-choice", "Are multiple choices allowed?")
+                    Commands.slash("end-poll", "Ends a poll")
+                            .addOption(STRING, "title", "The question or topic of the poll you wanna end", true)
+                            .setGuildOnly(true),
+                    Commands.slash("create-poll", "Sends a poll message")
+                            .addOption(STRING, "title", "The question or topic the poll is about", true)
+                            .addOption(STRING, "options", "Choices (separate by comma)", true)
+                            //.addOption(BOOLEAN, "multiple-choice", "Are multiple choices allowed?")
                             .setGuildOnly(true),
                     Commands.slash("server-setup", "Create various things")
                             .addOption(CHANNEL, "join-to-create", "Select the voice channel you want to use for join-to-create")
@@ -184,8 +189,11 @@ public class DiscordBot extends ListenerAdapter {
             case "clear":
                 clear(event, event.getOption("amount").getAsInt()); // content is required so no null-check here
                 break;
-            case "poll":
-                makePoll(event, event.getOption("title").getAsString(), event.getOption("options").getAsString(), event.getOption("multiple-choice").getAsBoolean()); // content is required so no null-check here
+            case "create-poll":
+                makePoll(event, event.getOption("title").getAsString(), event.getOption("options").getAsString()); // content is required so no null-check here
+                break;
+            case "end-poll":
+                endPoll(event, event.getOption("title").getAsString()); // content is required so no null-check here
                 break;
             case "status":
                 try {
@@ -351,7 +359,7 @@ public class DiscordBot extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
-        event.deferEdit().queue();
+        event.deferReply(true).queue();
     }
 
     public static void saveConfig() throws IOException, ParseException {
