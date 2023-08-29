@@ -14,8 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static me.beemo.DiscordBot.config;
-import static me.beemo.DiscordBot.saveConfig;
+import static me.beemo.DiscordBot.*;
 
 public class GPT {
     public static ArrayList<String> context;
@@ -48,6 +47,8 @@ public class GPT {
                     "{\"role\": \"user\", \"content\": \"" + text + "\"}], " +
                     "\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 500}";
 
+            reportToDeveloper(context.toString());
+
             connection.getOutputStream().write(requestBody.getBytes());
 
             int responseCode = connection.getResponseCode();
@@ -68,12 +69,7 @@ public class GPT {
                 JSONObject choices = (JSONObject) ((JSONArray) json.get("choices")).get(0);
                 JSONObject message = (JSONObject) choices.get("message");
 
-
                 String output = message.get("content").toString();
-
-                if(output.contains("DAN:")) {
-                    output = output.split("DAN:")[1];
-                }
 
                 if(context.size() >= 10){
                     context.remove(context.get(0));
