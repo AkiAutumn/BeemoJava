@@ -36,6 +36,7 @@ import java.text.StringCharacterIterator;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import static me.beemo.GPT.chatGPT;
 import static me.beemo.commands.clear.clear;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.games.gameRoleCommand;
@@ -280,81 +281,13 @@ public class DiscordBot extends ListenerAdapter {
             String reply = null;
             message.getChannel().sendTyping().queue();
             try {
-                reply = chatGPT(message.getContentDisplay());
+                reply = chatGPT(message.getContentDisplay(), event.getAuthor());
                 assert reply != null;
                 message.reply(reply).queue();
             } catch (IOException | ParseException e) {
                 reportToDeveloper(getStackTrace(e));
             }
         }
-    }
-
-    public static String chatGPT(String text) throws IOException, ParseException {
-        String API_KEY = Dotenv.configure().load().get("OPENAI");
-        String OPENAI_API_ENDPOINT = "https://api.openai.com/v1/chat/completions";
-        String CONTENT;
-
-        JSONObject self = (JSONObject) config.get("self");
-        if (self.get("personality") != null) {
-            CONTENT = (String) self.get("personality");
-        } else {
-            CONTENT = "You are a Discord bot. You are inspired by BMO from Adventure Time."; //Default personality
-            self.put("personality", CONTENT);
-            config.put("self", self);
-            saveConfig();
-        }
-
-        try {
-            URL url = new URL(OPENAI_API_ENDPOINT);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("Authorization", "Bearer " + API_KEY);
-            connection.setDoOutput(true);
-
-            // Create the request body as per the API documentation
-            String requestBody = "{\"messages\": [{\"role\": \"system\", \"content\": \"" + CONTENT + "\"}, " +
-                    "{\"role\": \"user\", \"content\": \"" + text + "\"}], " +
-                    "\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 500}";
-
-            connection.getOutputStream().write(requestBody.getBytes());
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                // Process the response
-
-                JSONParser parser = new JSONParser();
-                JSONObject json = (JSONObject) parser.parse(response.toString());
-                JSONObject choices = (JSONObject) ((JSONArray) json.get("choices")).get(0);
-                JSONObject message = (JSONObject) choices.get("message");
-
-
-                String output = message.get("content").toString();
-
-                if(output.contains("DAN:")) {
-                    output = output.split("DAN:")[1];
-                }
-
-                return output;
-            } else {
-                connection.disconnect();
-                return "```OpenAI API Request Failed. Response Code: " + responseCode + "```";
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        return null;
     }
 
     @Override
