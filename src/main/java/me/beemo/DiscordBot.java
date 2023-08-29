@@ -37,6 +37,7 @@ import java.util.EnumSet;
 import static me.beemo.GPT.chatGPT;
 import static me.beemo.commands.clear.clear;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
+import static me.beemo.commands.dev_only.deleteCommand.deleteCommand;
 import static me.beemo.commands.dev_only.sleep.toggleSleep;
 import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.info.beemoInfo;
@@ -72,6 +73,8 @@ public class DiscordBot extends ListenerAdapter {
                     .addEventListeners(new pollManager())
                     .build();
 
+
+
             botAdminList.add("309307881205923840"); //Aki
             botAdminList.add("700435712562168018"); //Sahne (Aki alt. account)
             botAdminList.add("197424794063470592"); //Kumo
@@ -83,6 +86,7 @@ public class DiscordBot extends ListenerAdapter {
                     Commands.slash("shutdown", "Kill Beemo"),
                     Commands.slash("sleep", "Disable all features"),
                     Commands.slash("update", "Update Beemo"),
+                    Commands.slash("delete-command", "Delete outdated commands"),
                     Commands.slash("info", "Get system info of Beemo's machine"),
                     Commands.slash("personality", "Change my personality")
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
@@ -234,6 +238,9 @@ public class DiscordBot extends ListenerAdapter {
                     break;
                 case "update":
                     beemoUpdate(event);
+                    break;
+                case "delete-command":
+                    deleteCommand(event);
                     break;
                 case "info":
                     beemoInfo(event);
