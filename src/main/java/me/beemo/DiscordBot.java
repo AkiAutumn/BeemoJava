@@ -73,8 +73,9 @@ public class DiscordBot extends ListenerAdapter {
                     .addEventListeners(new pollManager())
                     .build();
 
+            System.out.println("Beemo on the line.");
 
-
+            // Register bot admins
             botAdminList.add("309307881205923840"); //Aki
             botAdminList.add("700435712562168018"); //Sahne (Aki alt. account)
             botAdminList.add("197424794063470592"); //Kumo
@@ -131,8 +132,6 @@ public class DiscordBot extends ListenerAdapter {
             );
             // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
             commands.queue();
-
-            System.out.println("Beemo on the line.");
 
             //load config
             JSONParser parser = new JSONParser();

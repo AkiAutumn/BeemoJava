@@ -20,7 +20,11 @@ public class clear {
                 message.delete().queue();
             }
 
-            event.reply("Cleared " + amount + " messages! ^^").setEphemeral(true).queue();
+            if(amount == 1) {
+                event.reply("Cleared " + amount + " message! ^^").setEphemeral(true).queue();
+            } else {
+                event.reply("Cleared " + amount + " messages! ^^").setEphemeral(true).queue();
+            }
         }
     }
 }
