@@ -6,29 +6,32 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 
-import static me.beemo.DiscordBot.config;
-import static me.beemo.DiscordBot.saveConfig;
+import static me.beemo.DiscordBot.*;
 
 public class personality {
     public static void beemoSetPersonality(SlashCommandInteractionEvent event) throws IOException, ParseException {
-        String newPersonality = null;
+        if(botAdminList.contains(event.getUser().getId())) {
+            String newPersonality = null;
 
-        if(event.getOption("new") != null) {
-            newPersonality = event.getOption("new").getAsString();
-        }
+            if(event.getOption("new") != null) {
+                newPersonality = event.getOption("new").getAsString();
+            }
 
-        JSONObject self = (JSONObject) config.get("self");
+            JSONObject self = (JSONObject) config.get("self");
 
-        if(newPersonality != null) {
-            self.put("personality", newPersonality);
-            config.put("self", self);
-            saveConfig();
-            event.reply("I updated my personality!").setEphemeral(true).queue();
-        } else if(self.get("personality") != null) {
-                String currentPersonality = (String) self.get("personality");
-                event.reply("Current personality: " + currentPersonality).setEphemeral(true).queue();
-            } else {
-            event.reply("No config entry for a personality. Using default personality.").setEphemeral(true).queue();
+            if(newPersonality != null) {
+                self.put("personality", newPersonality);
+                config.put("self", self);
+                saveConfig();
+                event.reply("I updated my personality!").setEphemeral(true).queue();
+            } else if(self.get("personality") != null) {
+                    String currentPersonality = (String) self.get("personality");
+                    event.reply("Current personality: " + currentPersonality).setEphemeral(true).queue();
+                } else {
+                event.reply("No config entry for a personality. Using default personality.").setEphemeral(true).queue();
+            }
+        } else {
+            event.reply("Im sorry, only my developers are allowed to do this!").setEphemeral(true).queue();
         }
     }
 }

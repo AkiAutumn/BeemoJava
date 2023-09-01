@@ -39,6 +39,7 @@ import static me.beemo.commands.clear.clear;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.dev_only.deleteCommand.deleteCommand;
 import static me.beemo.commands.dev_only.sleep.toggleSleep;
+import static me.beemo.commands.dev_only.changeAPIKey.changeKey;
 import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.info.beemoInfo;
 import static me.beemo.commands.pollCommand.pollManager.endPoll;
@@ -86,6 +87,12 @@ public class DiscordBot extends ListenerAdapter {
             commands.addCommands(
                     Commands.slash("shutdown", "Kill Beemo"),
                     Commands.slash("sleep", "Disable all features"),
+                    Commands.slash("update-key", "Update internal key or tokens")
+                            .addOptions(
+                                    new OptionData(OptionType.STRING, "type", "The key you want to update", true)
+                                            .addChoice("OpenAI", "openai")
+                            )
+                            .addOption(STRING ,"content", "new key"),
                     Commands.slash("update", "Update Beemo"),
                     Commands.slash("delete-command", "Delete outdated commands"),
                     Commands.slash("info", "Get system info of Beemo's machine"),
@@ -237,6 +244,9 @@ public class DiscordBot extends ListenerAdapter {
                     break;
                 case "update":
                     beemoUpdate(event);
+                    break;
+                case "update-key":
+                    changeKey(event);
                     break;
                 case "delete-command":
                     deleteCommand(event);
