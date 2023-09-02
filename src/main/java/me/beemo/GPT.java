@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import static me.beemo.DiscordBot.*;
 
 public class GPT {
-    public static ArrayList<String> context;
+    public static ArrayList<String> context = new ArrayList<>();
 
     public static String chatGPT(String text, User user) throws IOException, ParseException {
         String API_KEY = Dotenv.configure().load().get("OPENAI");
@@ -46,8 +46,6 @@ public class GPT {
             String requestBody = "{\"messages\": [{\"role\": \"system\", \"content\": \"" + CONTENT + "For your memory, this is the past conversation: " + context.toString() + "\"}, " +
                     "{\"role\": \"user\", \"content\": \"" + text + "\"}], " +
                     "\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 500}";
-
-            reportToDeveloper(context.toString());
 
             connection.getOutputStream().write(requestBody.getBytes());
 
