@@ -75,7 +75,7 @@ public class vcJoinNotification extends ListenerAdapter {
                     bot.retrieveUserById(userId).queue(user -> {
                         user.openPrivateChannel().queue((channel) ->
                         {
-                            channel.sendMessage(member.getAsMention() + " joined " + joinedChannel.getAsMention() + " in " + guild.getName() + "! :D").queue();
+                            channel.sendMessage(member.getAsMention() + " joined " + joinedChannel.getAsMention() + "! :D").queue();
                         });
                     });
                 }
