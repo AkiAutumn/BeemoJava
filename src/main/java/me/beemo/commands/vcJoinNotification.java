@@ -61,17 +61,16 @@ public class vcJoinNotification extends ListenerAdapter {
         if(joinedChannel != null) {
             for (Object channelNotification : channelNotifications) {
                 String userId = (String) channelNotification;
-                boolean containsUser = false;
-
+                boolean cancelNotification = joinedChannel == guild.getAfkChannel();
 
                 for(Member memberInVC : joinedChannel.getMembers()){
                     if (memberInVC.getId().equals(userId)){
-                        containsUser = true;
+                        cancelNotification = true;
                         break;
                     }
                 }
 
-                if(!containsUser) {
+                if(!cancelNotification) {
                     bot.retrieveUserById(userId).queue(user -> {
                         user.openPrivateChannel().queue((channel) ->
                         {
