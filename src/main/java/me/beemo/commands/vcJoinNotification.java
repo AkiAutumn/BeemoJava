@@ -63,6 +63,7 @@ public class vcJoinNotification extends ListenerAdapter {
                 String userId = (String) channelNotification;
                 boolean containsUser = false;
 
+
                 for(Member memberInVC : joinedChannel.getMembers()){
                     if (memberInVC.getId().equals(userId)){
                         containsUser = true;
