@@ -36,7 +36,7 @@ public class vcJoinNotification extends ListenerAdapter {
         }
         JSONArray channelNotifications = (JSONArray) guildConfig.get("channelNotifications");
 
-        if(enabled && !channelNotifications.contains(userId)){
+        if(enabled){
             channelNotifications.add(userId);
             event.reply("You'll get notified whenever someone joins a VC on " + event.getGuild().getName()).setEphemeral(true).queue();
         } else {
