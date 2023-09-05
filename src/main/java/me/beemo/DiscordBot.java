@@ -4,12 +4,14 @@ import io.github.cdimascio.dotenv.Dotenv;
 import me.beemo.commands.pollCommand.pollManager;
 import me.beemo.commands.server_setup.joinToCreate;
 import me.beemo.commands.server_setup.onJoinRole;
+import me.beemo.commands.vcJoinNotification;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -53,6 +55,7 @@ import static me.beemo.commands.say.say;
 import static me.beemo.commands.dev_only.shutdown.beemoShutdown;
 import static me.beemo.commands.status.updateBotStatus;
 import static me.beemo.commands.dev_only.update.beemoUpdate;
+import static me.beemo.commands.vcJoinNotification.vcJoinNotification;
 import static me.beemo.commands.wake.wake;
 import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
@@ -72,6 +75,7 @@ public class DiscordBot extends ListenerAdapter {
                     .addEventListeners(new joinToCreate())
                     .addEventListeners(new onJoinRole())
                     .addEventListeners(new pollManager())
+                    .addEventListeners(new vcJoinNotification())
                     .build();
 
             System.out.println("Beemo on the line.");
@@ -110,6 +114,8 @@ public class DiscordBot extends ListenerAdapter {
                                             .addChoice("Competing in ...", "competing")
                             )
                             .addOption(STRING, "content", "What the status should say", true),
+                    Commands.slash("vc-notifications", "Get notified when someone joins a voice-channel. Make sure you enable DMs ;)")
+                            .addOption(BOOLEAN, "enabled", "Toggle notifications", true),
                     Commands.slash("move-all", "Moves all members of a channel")
                             .addOptions(new OptionData(CHANNEL, "destination", "Where to move", true).setChannelTypes(ChannelType.VOICE))
                             .setGuildOnly(true)
@@ -222,6 +228,13 @@ public class DiscordBot extends ListenerAdapter {
                     break;
                 case "move-all":
                     moveAll(event, event.getOption("destination").getAsChannel());
+                    break;
+                case "vc-notifications":
+                    try {
+                        vcJoinNotification(event);
+                    } catch (IOException | ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
                 case "pronouns":
                     pronounsRoleCommand(event);
