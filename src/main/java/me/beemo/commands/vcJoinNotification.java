@@ -26,8 +26,8 @@ public class vcJoinNotification extends ListenerAdapter {
         Member member = event.getMember();
         String userId = member.getId();
 
-        if(!config.containsKey(userId)) {
-            config.put(userId, new JSONObject());
+        if(!config.containsKey(guildId)) {
+            config.put(guildId, new JSONObject());
         }
         JSONObject guildConfig = (JSONObject) config.get(guildId);
 
