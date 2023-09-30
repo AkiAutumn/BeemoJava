@@ -1,5 +1,6 @@
 package me.beemo.commands;
 
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -14,11 +15,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static me.beemo.DiscordBot.*;
 
 public class vcJoinNotification extends ListenerAdapter {
+
     public static void vcJoinNotification(SlashCommandInteractionEvent event) throws IOException, ParseException {
 
         boolean enabled = event.getOption("enabled").getAsBoolean();
@@ -63,6 +68,10 @@ public class vcJoinNotification extends ListenerAdapter {
                 String userId = (String) channelNotification;
                 boolean cancelNotification = joinedChannel == guild.getAfkChannel();
 
+                if(event.getGuild().getMemberById(userId).getOnlineStatus() != OnlineStatus.ONLINE) {
+                    cancelNotification = true;
+                }
+
                 for(Member memberInVC : joinedChannel.getMembers()){
                     if (memberInVC.getId().equals(userId)){
                         cancelNotification = true;
@@ -71,12 +80,14 @@ public class vcJoinNotification extends ListenerAdapter {
                 }
 
                 if(!cancelNotification) {
+
                     bot.retrieveUserById(userId).queue(user -> {
                         user.openPrivateChannel().queue((channel) ->
                         {
                             channel.sendMessage(member.getAsMention() + " joined " + joinedChannel.getAsMention() + "! :D").queue();
                         });
                     });
+
                 }
             }
         }
