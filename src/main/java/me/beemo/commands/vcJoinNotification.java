@@ -68,9 +68,11 @@ public class vcJoinNotification extends ListenerAdapter {
                 String userId = (String) channelNotification;
                 boolean cancelNotification = joinedChannel == guild.getAfkChannel();
 
+                /*
                 if(event.getGuild().getMemberById(userId).getOnlineStatus() != OnlineStatus.ONLINE) {
                     cancelNotification = true;
                 }
+                */
 
                 for(Member memberInVC : joinedChannel.getMembers()){
                     if (memberInVC.getId().equals(userId)){
