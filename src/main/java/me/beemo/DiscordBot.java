@@ -75,7 +75,6 @@ public class DiscordBot extends ListenerAdapter {
                     .addEventListeners(new onJoinRole())
                     .addEventListeners(new pollManager())
                     .addEventListeners(new vcJoinNotification())
-                    .addEventListeners(new AuditLog())
                     .build();
 
             System.out.println("Beemo on the line.");
@@ -197,98 +196,81 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if(event.getName().equals("sleep")){
-            toggleSleep(event);
-        }
-        if(!sleeping) {
-            // Only accept commands from guilds
-            if (event.getGuild() == null)
-                return;
-            switch (event.getName()) {
-                case "say":
-                    say(event, event.getOption("content").getAsString()); // content is required so no null-check here
-                    break;
-                case "clear":
-                    clear(event, event.getOption("amount").getAsInt()); // content is required so no null-check here
-                    break;
-                case "create-poll":
-                    makePoll(event, event.getOption("title").getAsString(), event.getOption("options").getAsString()); // content is required so no null-check here
-                    break;
-                case "end-poll":
-                    endPoll(event, event.getOption("title").getAsString()); // content is required so no null-check here
-                    break;
-                case "status":
-                    try {
-                        updateBotStatus(event.getOption("type").getAsString(), event.getOption("content").getAsString());
-                        event.reply("Got it :3").setEphemeral(true).queue();
-                    } catch (IOException | ParseException e) {
-                        reportToDeveloper(getStackTrace(e));
-                        throw new RuntimeException(e);
-                    }
-                    break;
-                case "move-all":
-                    moveAll(event, event.getOption("destination").getAsChannel());
-                    break;
-                case "vc-notifications":
-                    try {
-                        vcJoinNotification(event);
-                    } catch (IOException | ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-                case "pronouns":
-                    pronounsRoleCommand(event);
-                    break;
-                case "colors":
-                    colorRoleCommand(event);
-                    break;
-                case "games":
-                    gameRoleCommand(event);
-                    break;
-                case "wake":
-                    try {
+        try {
+            if(event.getName().equals("sleep")){
+                toggleSleep(event);
+            }
+            if(!sleeping) {
+                // Only accept commands from guilds
+                if (event.getGuild() == null)
+                    return;
+                switch (event.getName()) {
+                    case "say":
+                        say(event, event.getOption("content").getAsString()); // content is required so no null-check here
+                        break;
+                    case "clear":
+                        clear(event, event.getOption("amount").getAsInt()); // content is required so no null-check here
+                        break;
+                    case "create-poll":
+                        makePoll(event, event.getOption("title").getAsString(), event.getOption("options").getAsString()); // content is required so no null-check here
+                        break;
+                    case "end-poll":
+                        endPoll(event, event.getOption("title").getAsString()); // content is required so no null-check here
+                        break;
+                    case "status":
+                            updateBotStatus(event.getOption("type").getAsString(), event.getOption("content").getAsString());
+                            event.reply("Got it :3").setEphemeral(true).queue();
+                        break;
+                    case "move-all":
+                        moveAll(event, event.getOption("destination").getAsChannel());
+                        break;
+                    case "vc-notifications":
+                            vcJoinNotification(event);
+                        break;
+                    case "pronouns":
+                        pronounsRoleCommand(event);
+                        break;
+                    case "colors":
+                        colorRoleCommand(event);
+                        break;
+                    case "games":
+                        gameRoleCommand(event);
+                        break;
+                    case "wake":
                         wake(event, event.getOption("user").getAsUser());
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-                case "shutdown":
-                    beemoShutdown(event);
-                    break;
-                case "update":
-                    beemoUpdate(event);
-                    break;
-                case "update-key":
-                    changeKey(event);
-                    break;
-                case "delete-command":
-                    deleteCommand(event);
-                    break;
-                case "info":
-                    beemoInfo(event);
-                    break;
-                case "personality":
-                    try {
+                        break;
+                    case "shutdown":
+                        beemoShutdown(event);
+                        break;
+                    case "update":
+                        beemoUpdate(event);
+                        break;
+                    case "update-key":
+                        changeKey(event);
+                        break;
+                    case "delete-command":
+                        deleteCommand(event);
+                        break;
+                    case "info":
+                        beemoInfo(event);
+                        break;
+                    case "personality":
                         beemoSetPersonality(event);
-                    } catch (IOException | ParseException e) {
-                        reportToDeveloper(getStackTrace(e));
-                    }
-                    break;
-                case "server-setup":
-                    try {
+                        break;
+                    case "server-setup":
                         if (event.getOption("join-to-create") != null) {
                             joinToCreate(event);
                         }
                         if (event.getOption("on-join-role") != null) {
                                 onJoinRole(event);
                         }
-                    } catch (IOException | ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                    break;
-                default:
-                    event.reply("I don't recognise this command :(").setEphemeral(true).queue();
+                        break;
+                    default:
+                        event.reply("I don't recognise this command :(").setEphemeral(true).queue();
+                }
             }
+        } catch (IOException | ParseException | InterruptedException e) {
+            reportToDeveloper(getStackTrace(e));
         }
     }
 
