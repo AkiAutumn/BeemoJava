@@ -39,7 +39,7 @@ public class joinToCreate extends ListenerAdapter {
             guildConfigObject.put("joinToCreateCategoryID", null);
             config.put(event.getGuild().getId(), guildConfigObject);
             saveConfig();
-            event.reply("Not a voice channel. Removed join-to-create");
+            event.reply("Not a valid voice channel. Removed join-to-create");
         } else {
             VoiceChannel voiceChannel = event.getOption("join-to-create").getAsChannel().asVoiceChannel();
 
@@ -47,7 +47,7 @@ public class joinToCreate extends ListenerAdapter {
             guildConfigObject.put("joinToCreateCategoryID", voiceChannel.getParentCategory().getId());
             config.put(event.getGuild().getId(), guildConfigObject);
             saveConfig();
-            event.reply(voiceChannel.getName() + " is now a join-to-create channel!").setEphemeral(true).queue();
+            event.reply(voiceChannel.getName() + " is now the join-to-create channel!").setEphemeral(true).queue();
         }
     }
 

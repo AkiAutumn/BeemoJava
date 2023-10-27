@@ -75,6 +75,7 @@ public class DiscordBot extends ListenerAdapter {
                     .addEventListeners(new onJoinRole())
                     .addEventListeners(new pollManager())
                     .addEventListeners(new vcJoinNotification())
+                    .addEventListeners(new AuditLog())
                     .build();
 
             System.out.println("Beemo on the line.");
@@ -274,23 +275,15 @@ public class DiscordBot extends ListenerAdapter {
                     }
                     break;
                 case "server-setup":
-                    if (event.getOption("join-to-create") != null) {
-                        try {
+                    try {
+                        if (event.getOption("join-to-create") != null) {
                             joinToCreate(event);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
                         }
-                    }
-                    if (event.getOption("on-join-role") != null) {
-                        try {
-                            onJoinRole(event);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
+                        if (event.getOption("on-join-role") != null) {
+                                onJoinRole(event);
                         }
+                    } catch (IOException | ParseException e) {
+                        throw new RuntimeException(e);
                     }
                     break;
                 default:
