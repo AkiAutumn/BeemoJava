@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import static me.beemo.GPT.chatGPT;
+import static me.beemo.commands.anonymousDM.sendAnonymousDM;
 import static me.beemo.commands.clear.clear;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
 import static me.beemo.commands.dev_only.deleteCommand.deleteCommand;
@@ -140,7 +141,10 @@ public class DiscordBot extends ListenerAdapter {
                     Commands.slash("clear", "Delete previous messages")
                             .addOption(INTEGER, "amount", "How many messages to clear?", true)
                             .setGuildOnly(true)
-                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR))
+                            .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.ADMINISTRATOR)),
+                    Commands.slash("dm", "Send a DM anonymously")
+                            .addOption(USER, "user", "Recipient", true)
+                            .addOption(STRING, "message", "Message", true)
             );
             // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
             commands.queue();
@@ -256,6 +260,9 @@ public class DiscordBot extends ListenerAdapter {
                         break;
                     case "personality":
                         beemoSetPersonality(event);
+                        break;
+                    case "dm":
+                        sendAnonymousDM(event);
                         break;
                     case "server-setup":
                         if (event.getOption("join-to-create") != null) {
