@@ -313,17 +313,20 @@ public class DiscordBot extends ListenerAdapter {
             }
 
             if(!message.isFromGuild()){
-                EmbedBuilder embed = new EmbedBuilder();
-                embed.setAuthor(message.getMember().getAsMention(), message.getMember().getEffectiveAvatarUrl(), message.getMember().getEffectiveAvatarUrl());
-                embed.setTitle(message.getContentDisplay());
-                embed.setColor(Color.PINK);
+                if(!message.getAuthor().getId().equals(bot.getSelfUser().getId())) {
+                    EmbedBuilder embed = new EmbedBuilder();
+                    embed.setAuthor(message.getAuthor().getName(), message.getAuthor().getEffectiveAvatarUrl(), message.getAuthor().getEffectiveAvatarUrl());
+                    embed.setTitle("Message redirect");
+                    embed.setDescription(message.getContentDisplay());
+                    embed.setColor(Color.PINK);
 
-                bot.retrieveUserById(botAdminList.get(0)).queue(user -> {
-                    user.openPrivateChannel().queue((channel) ->
-                    {
-                        channel.sendMessageEmbeds(embed.build()).queue();
+                    bot.retrieveUserById(botAdminList.get(0)).queue(user -> {
+                        user.openPrivateChannel().queue((channel) ->
+                        {
+                            channel.sendMessageEmbeds(embed.build()).queue();
+                        });
                     });
-                });
+                }
             }
         }
     }
