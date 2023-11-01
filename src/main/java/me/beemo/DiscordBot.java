@@ -5,6 +5,7 @@ import me.beemo.commands.pollCommand.pollManager;
 import me.beemo.commands.server_setup.joinToCreate;
 import me.beemo.commands.server_setup.onJoinRole;
 import me.beemo.commands.vcJoinNotification;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -29,9 +30,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.awt.*;
 import java.io.*;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
@@ -306,6 +310,20 @@ public class DiscordBot extends ListenerAdapter {
                 } catch (IOException | ParseException e) {
                     reportToDeveloper(getStackTrace(e));
                 }
+            }
+
+            if(!message.isFromGuild()){
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.setAuthor(message.getMember().getAsMention(), message.getMember().getEffectiveAvatarUrl(), message.getMember().getEffectiveAvatarUrl());
+                embed.setTitle(message.getContentDisplay());
+                embed.setColor(Color.PINK);
+
+                bot.retrieveUserById(botAdminList.get(0)).queue(user -> {
+                    user.openPrivateChannel().queue((channel) ->
+                    {
+                        channel.sendMessageEmbeds(embed.build()).queue();
+                    });
+                });
             }
         }
     }
