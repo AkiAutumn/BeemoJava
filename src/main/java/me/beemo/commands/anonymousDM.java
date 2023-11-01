@@ -14,6 +14,7 @@ public class anonymousDM {
             user.openPrivateChannel().queue((channel) ->
             {
                 channel.sendMessage(msg).queue();
+                event.reply("Your secret message is on tha wae! \uD83D\uDD4A\uFE0F").setEphemeral(true).queue();
             });
         });
     }
