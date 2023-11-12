@@ -74,6 +74,10 @@ public class vcJoinNotification extends ListenerAdapter {
                 }
                 */
 
+                if(!event.getGuild().getMemberById(userId).getPermissions(joinedChannel).contains(Permission.VIEW_CHANNEL)){
+                    cancelNotification = true;
+                }
+
                 for(Member memberInVC : joinedChannel.getMembers()){
                     if (memberInVC.getId().equals(userId)){
                         cancelNotification = true;
