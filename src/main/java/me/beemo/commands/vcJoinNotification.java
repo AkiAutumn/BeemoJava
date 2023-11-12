@@ -53,20 +53,21 @@ public class vcJoinNotification extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceUpdate(GuildVoiceUpdateEvent event) {
-        Member member = event.getMember();
-        Guild guild = event.getGuild();
-        AudioChannel joinedChannel = event.getChannelJoined();
-        JSONObject guildConfig = (JSONObject) config.get(event.getGuild().getId());
-        if(!guildConfig.containsKey("channelNotifications")){
-            guildConfig.put("channelNotifications", new JSONArray());
-        }
-        JSONArray channelNotifications = (JSONArray) guildConfig.get("channelNotifications");
+        if(!sleeping) {
+            Member member = event.getMember();
+            Guild guild = event.getGuild();
+            AudioChannel joinedChannel = event.getChannelJoined();
+            JSONObject guildConfig = (JSONObject) config.get(event.getGuild().getId());
+            if (!guildConfig.containsKey("channelNotifications")) {
+                guildConfig.put("channelNotifications", new JSONArray());
+            }
+            JSONArray channelNotifications = (JSONArray) guildConfig.get("channelNotifications");
 
-        // Check if VC was joined
-        if(joinedChannel != null) {
-            for (Object channelNotification : channelNotifications) {
-                String userId = (String) channelNotification;
-                boolean cancelNotification = joinedChannel == guild.getAfkChannel();
+            // Check if VC was joined
+            if (joinedChannel != null) {
+                for (Object channelNotification : channelNotifications) {
+                    String userId = (String) channelNotification;
+                    boolean cancelNotification = joinedChannel == guild.getAfkChannel();
 
                 /*
                 if(event.getGuild().getMemberById(userId).getOnlineStatus() != OnlineStatus.ONLINE) {
@@ -74,35 +75,36 @@ public class vcJoinNotification extends ListenerAdapter {
                 }
                 */
 
-                if(!event.getGuild().getMemberById(userId).getPermissions(joinedChannel).contains(Permission.VIEW_CHANNEL)){
-                    cancelNotification = true;
-                }
-
-                for(Member memberInVC : joinedChannel.getMembers()){
-                    if (memberInVC.getId().equals(userId)){
+                    if (!event.getGuild().getMemberById(userId).getPermissions(joinedChannel).contains(Permission.VIEW_CHANNEL)) {
                         cancelNotification = true;
-                        break;
+                    }
+
+                    for (Member memberInVC : joinedChannel.getMembers()) {
+                        if (memberInVC.getId().equals(userId)) {
+                            cancelNotification = true;
+                            break;
+                        }
+                    }
+
+                    if (!cancelNotification) {
+
+                        bot.retrieveUserById(userId).queue(user -> {
+                            user.openPrivateChannel().queue((channel) ->
+                            {
+                                channel.sendMessage(member.getAsMention() + " joined " + joinedChannel.getAsMention() + "! :D").queue();
+                            });
+                        });
+
                     }
                 }
-
-                if(!cancelNotification) {
-
-                    bot.retrieveUserById(userId).queue(user -> {
-                        user.openPrivateChannel().queue((channel) ->
-                        {
-                            channel.sendMessage(member.getAsMention() + " joined " + joinedChannel.getAsMention() + "! :D").queue();
-                        });
-                    });
-
-                }
             }
-        }
 
-        //save config changes
-        try {
-            saveConfig();
-        } catch (IOException | ParseException e) {
-            throw new RuntimeException(e);
+            //save config changes
+            try {
+                saveConfig();
+            } catch (IOException | ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
