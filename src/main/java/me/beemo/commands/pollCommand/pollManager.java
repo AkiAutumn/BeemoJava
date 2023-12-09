@@ -77,11 +77,11 @@ public class pollManager extends ListenerAdapter {
     public static void getPolls (SlashCommandInteractionEvent event) {
 
         int count = 0;
-        String replyText = "active polls: " + activePolls.size() + "]";
+        String replyText = "**[active polls: " + activePolls.size() + "]**";
 
         for (Poll poll : activePolls) {
             String title = poll.getTitle();
-            replyText += title + " ,";
+            replyText += " " + title + ",";
             count++;
         }
 
