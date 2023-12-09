@@ -77,13 +77,15 @@ public class pollManager extends ListenerAdapter {
     public static void getPolls (SlashCommandInteractionEvent event) {
 
         int count = 0;
-        String replyText = activePolls.size() +  " active polls: ";
+        String replyText = "active polls: " + activePolls.size() + "]";
 
         for (Poll poll : activePolls) {
             String title = poll.getTitle();
-            replyText += ", " + title;
+            replyText += title + " ,";
             count++;
         }
+
+        replyText = replyText.substring(0, 1);
 
         if(count == 0){
             event.reply("No polls active!").setEphemeral(true).queue();
