@@ -85,7 +85,7 @@ public class pollManager extends ListenerAdapter {
             count++;
         }
 
-        replyText = replyText.substring(0, 1);
+        replyText = replyText.substring(0, replyText.length() - 1);
 
         if(count == 0){
             event.reply("No polls active!").setEphemeral(true).queue();
