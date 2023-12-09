@@ -69,23 +69,28 @@ public class vcJoinNotification extends ListenerAdapter {
                     String userId = (String) channelNotification;
                     boolean cancelNotification = joinedChannel == guild.getAfkChannel();
 
-                /*
-                if(event.getGuild().getMemberById(userId).getOnlineStatus() != OnlineStatus.ONLINE) {
-                    cancelNotification = true;
-                }
-                */
-
-                    if (!event.getGuild().getMemberById(userId).getPermissions(joinedChannel).contains(Permission.VIEW_CHANNEL)) {
+                    /*
+                    if(event.getGuild().getMemberById(userId).getOnlineStatus() != OnlineStatus.ONLINE) {
                         cancelNotification = true;
+                    }
+                    */
+                    if(event.getGuild().getMemberById(userId) != null) {
+                        if (!event.getGuild().getMemberById(userId).getPermissions(joinedChannel).contains(Permission.VIEW_CHANNEL)) {
+                            cancelNotification = true;
+                            System.out.println("Notification cancelled by missing permission.");
+                        }
+                    } else {
+                        System.out.println("Member was null");
                     }
 
                     for (Member memberInVC : joinedChannel.getMembers()) {
                         if (memberInVC.getId().equals(userId)) {
                             cancelNotification = true;
+                            System.out.println("Notification cancelled by channel member analysis.");
                             break;
                         }
                     }
-
+                    System.out.println("Cancel Notification = " + cancelNotification);
                     if (!cancelNotification) {
 
                         bot.retrieveUserById(userId).queue(user -> {

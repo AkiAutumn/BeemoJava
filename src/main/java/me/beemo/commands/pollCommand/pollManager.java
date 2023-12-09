@@ -74,6 +74,26 @@ public class pollManager extends ListenerAdapter {
         event.reply("No such poll found").setEphemeral(true).queue();
     }
 
+    public static void getPolls (SlashCommandInteractionEvent event) {
+
+        int count = 0;
+        String replyText = activePolls.size() +  " active polls: ";
+
+        for (Poll poll : activePolls) {
+            String title = poll.getTitle();
+            replyText += ", " + title;
+            count++;
+        }
+
+        if(count == 0){
+            event.reply("No polls active!").setEphemeral(true).queue();
+        }
+        else {
+            event.reply(replyText).setEphemeral(true).queue();
+        }
+    }
+
+
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event)
@@ -86,12 +106,14 @@ public class pollManager extends ListenerAdapter {
             for (Choice choice : poll.getChoices()){
                 if (Objects.equals(choice.getId(), type)) { //Clicked button equals existing active choice
                     if(!poll.isMultipleChoice()){
-
+                        //TODO
                     }
                     if(!choice.hasVoted(authorId)) {
                         choice.addVote(authorId);
+                        event.reply("Counted your vote!").setEphemeral(true).queue();
                     } else {
                         choice.removeVote(authorId);
+                        event.reply("Removed your vote!").setEphemeral(true).queue();
                     }
                     break;
                 } else {

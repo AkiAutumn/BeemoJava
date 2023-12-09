@@ -48,8 +48,7 @@ import static me.beemo.commands.dev_only.sleep.toggleSleep;
 import static me.beemo.commands.dev_only.changeAPIKey.changeKey;
 import static me.beemo.commands.games.gameRoleCommand;
 import static me.beemo.commands.info.beemoInfo;
-import static me.beemo.commands.pollCommand.pollManager.endPoll;
-import static me.beemo.commands.pollCommand.pollManager.makePoll;
+import static me.beemo.commands.pollCommand.pollManager.*;
 import static me.beemo.commands.server_setup.joinToCreate.joinToCreate;
 import static me.beemo.commands.server_setup.onJoinRole.onJoinRole;
 import static me.beemo.commands.massmove.moveAll;
@@ -131,6 +130,8 @@ public class DiscordBot extends ListenerAdapter {
                             .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.VOICE_MOVE_OTHERS)),
                     Commands.slash("end-poll", "Ends a poll")
                             .addOption(STRING, "title", "The question or topic of the poll you wanna end", true)
+                            .setGuildOnly(true),
+                    Commands.slash("active-polls", "Check the currently active polls")
                             .setGuildOnly(true),
                     Commands.slash("create-poll", "Sends a poll message")
                             .addOption(STRING, "title", "The question or topic the poll is about", true)
@@ -224,6 +225,9 @@ public class DiscordBot extends ListenerAdapter {
                         break;
                     case "end-poll":
                         endPoll(event, event.getOption("title").getAsString()); // content is required so no null-check here
+                        break;
+                    case "active-polls":
+                        getPolls(event);
                         break;
                     case "status":
                             updateBotStatus(event.getOption("type").getAsString(), event.getOption("content").getAsString());
