@@ -21,7 +21,7 @@ public class massmove {
                 }
                 event.reply("Done :3").setEphemeral(true).queue();
             } else {
-                event.reply("You must be in a audio channel in order to use this!").setEphemeral(true).queue();
+                event.reply("You must be in a voice channel in order to use this!").setEphemeral(true).queue();
             }
         } else {
             event.reply("Wrong channel type :(").setEphemeral(true).queue();
