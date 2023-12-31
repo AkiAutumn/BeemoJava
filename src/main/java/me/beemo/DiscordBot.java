@@ -19,10 +19,12 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.json.simple.JSONArray;
@@ -37,6 +39,7 @@ import java.text.StringCharacterIterator;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 
 import static me.beemo.GPT.chatGPT;
@@ -84,14 +87,12 @@ public class DiscordBot extends ListenerAdapter {
             System.out.println("Beemo on the line.");
 
             // Register bot admins
-            botAdminList.add("309307881205923840"); //Aki
-            botAdminList.add("700435712562168018"); //Sahne (Aki alt. account)
-            botAdminList.add("197424794063470592"); //Kumo
+            botAdminList.add("309307881205923840"); // Aki
+            botAdminList.add("700435712562168018"); // Sahne (Aki alt. account)
+            botAdminList.add("197424794063470592"); // Kumo
 
-            // These commands might take a few minutes to be active after creation/update/delete
-            CommandListUpdateAction commands = bot.updateCommands();
-
-            commands.addCommands(
+            // Initialise all commands
+            SlashCommandData[] slashCommandData = {
                     Commands.slash("shutdown", "Kill Beemo"),
                     Commands.slash("sleep", "Disable all features"),
                     Commands.slash("update-key", "Update internal key or tokens")
@@ -99,7 +100,7 @@ public class DiscordBot extends ListenerAdapter {
                                     new OptionData(OptionType.STRING, "type", "The key you want to update", true)
                                             .addChoice("OpenAI", "openai")
                             )
-                            .addOption(STRING ,"content", "new key"),
+                            .addOption(STRING, "content", "new key"),
                     Commands.slash("update", "Update Beemo"),
                     Commands.slash("delete-command", "Delete outdated commands"),
                     Commands.slash("info", "Get system info of Beemo's machine"),
@@ -150,11 +151,14 @@ public class DiscordBot extends ListenerAdapter {
                     Commands.slash("dm", "Send a DM anonymously")
                             .addOption(USER, "user", "Recipient", true)
                             .addOption(STRING, "message", "Message", true)
-            );
-            // Send the new set of commands to discord, this will override any existing global commands with the new set provided here
-            commands.queue();
+            };
 
-            //load config
+            // Send commands to discord
+            for(SlashCommandData data : slashCommandData) {
+                bot.upsertCommand(data).queue();
+            }
+
+            // Load config
             JSONParser parser = new JSONParser();
             try {
                 config = (JSONObject) parser.parse(new FileReader("config.json"));
@@ -165,8 +169,8 @@ public class DiscordBot extends ListenerAdapter {
             } catch (IOException | ParseException e) {
                 reportToDeveloper(getStackTrace(e));
             }
-            //get last activity status and set it again
 
+            // Get last activity status and apply it
             JSONObject self = (JSONObject) config.get("self");
             if(self != null) {
                 JSONArray lastActivityArray = (JSONArray) self.get("lastActivity");
