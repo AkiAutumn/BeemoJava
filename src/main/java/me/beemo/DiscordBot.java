@@ -93,7 +93,7 @@ public class DiscordBot extends ListenerAdapter {
             botAdminList.add("700435712562168018"); // Sahne (Aki alt. account)
             botAdminList.add("197424794063470592"); // Kumo
 
-            // Clear command data
+            /* Clear command data
             bot.retrieveCommands().queue(new Consumer<>() {
                 @Override
                 public void accept(List<Command> commands) {
@@ -103,7 +103,7 @@ public class DiscordBot extends ListenerAdapter {
                     }
                 }
             });
-
+            */
             // Initialise slash command data
             SlashCommandData[] slashCommandData = {
                     Commands.slash("shutdown", "Kill Beemo"),
