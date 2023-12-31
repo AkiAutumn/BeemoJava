@@ -304,6 +304,7 @@ public class DiscordBot extends ListenerAdapter {
         if(!sleeping) {
             Message message = event.getMessage();
 
+            /* Broken due to expired openai api key
             if (message.getMentions().getUsers().contains(bot.getSelfUser())) {
                 String reply = null;
                 message.getChannel().sendTyping().queue();
@@ -315,6 +316,7 @@ public class DiscordBot extends ListenerAdapter {
                     reportToDeveloper(getStackTrace(e));
                 }
             }
+            */
 
             if(!message.isFromGuild()){
                 if(!message.getAuthor().getId().equals(bot.getSelfUser().getId())) {
