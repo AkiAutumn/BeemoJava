@@ -41,6 +41,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.function.Consumer;
 
 import static me.beemo.GPT.chatGPT;
 import static me.beemo.commands.anonymousDM.sendAnonymousDM;
@@ -91,7 +93,18 @@ public class DiscordBot extends ListenerAdapter {
             botAdminList.add("700435712562168018"); // Sahne (Aki alt. account)
             botAdminList.add("197424794063470592"); // Kumo
 
-            // Initialise all commands
+            // Clear command data
+            bot.retrieveCommands().queue(new Consumer<>() {
+                @Override
+                public void accept(List<Command> commands) {
+                    for (Command command : commands) {
+                        String id = command.getId();
+                        bot.deleteCommandById(id).queue();
+                    }
+                }
+            });
+
+            // Initialise slash command data
             SlashCommandData[] slashCommandData = {
                     Commands.slash("shutdown", "Kill Beemo"),
                     Commands.slash("sleep", "Disable all features"),
@@ -153,7 +166,7 @@ public class DiscordBot extends ListenerAdapter {
                             .addOption(STRING, "message", "Message", true)
             };
 
-            // Send commands to discord
+            // Send slash command data to discord
             for(SlashCommandData data : slashCommandData) {
                 bot.upsertCommand(data).queue();
             }
