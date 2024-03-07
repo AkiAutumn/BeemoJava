@@ -19,14 +19,12 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -36,15 +34,9 @@ import java.awt.*;
 import java.io.*;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.function.Consumer;
 
-import static me.beemo.GPT.chatGPT;
 import static me.beemo.commands.anonymousDM.sendAnonymousDM;
 import static me.beemo.commands.clear.clear;
 import static me.beemo.commands.colorMenu.colorRoleCommand;
@@ -60,6 +52,7 @@ import static me.beemo.commands.massmove.moveAll;
 import static me.beemo.commands.dev_only.personality.beemoSetPersonality;
 import static me.beemo.commands.pronouns.pronounsRoleCommand;
 import static me.beemo.commands.say.say;
+import static me.beemo.commands.warn.warn;
 import static me.beemo.commands.dev_only.shutdown.beemoShutdown;
 import static me.beemo.commands.status.updateBotStatus;
 import static me.beemo.commands.dev_only.update.beemoUpdate;
@@ -122,6 +115,9 @@ public class DiscordBot extends ListenerAdapter {
                             .addOption(STRING, "new", "Describe my new personality in a few sentences!"),
                     Commands.slash("say", "Makes the bot say what you tell it to")
                             .addOption(STRING, "content", "What the bot should say", true),
+                    Commands.slash("warn", "Warn a user if they misbehave")
+                            .addOption(USER, "user", "The user to be warned", true)
+                            .addOption(STRING, "reason", "The reason for the warning", true),
                     Commands.slash("status", "Changes my status")
                             .addOptions(
                                     new OptionData(OptionType.STRING, "type", "The type of activity", true)
@@ -232,16 +228,19 @@ public class DiscordBot extends ListenerAdapter {
                     return;
                 switch (event.getName()) {
                     case "say":
-                        say(event, event.getOption("content").getAsString()); // content is required so no null-check here
+                        say(event, event.getOption("content").getAsString());
+                        break;
+                    case "warn":
+                        warn(event, event.getOption("user").getAsUser(), event.getOption("reason").getAsString());
                         break;
                     case "clear":
-                        clear(event, event.getOption("amount").getAsInt()); // content is required so no null-check here
+                        clear(event, event.getOption("amount").getAsInt());
                         break;
                     case "create-poll":
-                        makePoll(event, event.getOption("title").getAsString(), event.getOption("options").getAsString()); // content is required so no null-check here
+                        makePoll(event, event.getOption("title").getAsString(), event.getOption("options").getAsString());
                         break;
                     case "end-poll":
-                        endPoll(event, event.getOption("title").getAsString()); // content is required so no null-check here
+                        endPoll(event, event.getOption("title").getAsString());
                         break;
                     case "active-polls":
                         getPolls(event);
@@ -254,7 +253,7 @@ public class DiscordBot extends ListenerAdapter {
                         moveAll(event, event.getOption("destination").getAsChannel());
                         break;
                     case "vc-notifications":
-                            vcJoinNotification(event);
+                        vcJoinNotification(event);
                         break;
                     case "pronouns":
                         pronounsRoleCommand(event);
